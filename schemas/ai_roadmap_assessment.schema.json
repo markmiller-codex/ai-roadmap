@@ -1,0 +1,629 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AI Roadmap Assessment",
+  "type": "object",
+  "required": [
+    "company_profile",
+    "business_functions",
+    "workflows",
+    "technology_stack",
+    "ai_readiness",
+    "opportunities"
+  ],
+  "properties": {
+    "company_profile": {
+      "type": "object",
+      "required": [
+        "company_name",
+        "industry",
+        "employee_count",
+        "locations"
+      ],
+      "properties": {
+        "company_name": {
+          "type": "string"
+        },
+        "industry": {
+          "type": "string"
+        },
+        "subindustry": {
+          "type": "string"
+        },
+        "locations": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "employee_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "annual_revenue": {
+          "type": "number"
+        },
+        "years_in_business": {
+          "type": "number"
+        },
+        "customer_types": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "revenue_sources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "operating_model": {
+          "type": "string"
+        },
+        "management_structure": {
+          "type": "string"
+        },
+        "strategic_priorities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "current_business_pressures": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "business_functions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "function_name"
+        ],
+        "properties": {
+          "function_name": {
+            "type": "string"
+          },
+          "employee_count": {
+            "type": "integer"
+          },
+          "manager_owner": {
+            "type": "string"
+          },
+          "importance": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "pain_level": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "systems_used": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "notes": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "role_groups": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "role_name": {
+            "type": "string"
+          },
+          "function_name": {
+            "type": "string"
+          },
+          "headcount": {
+            "type": "integer"
+          },
+          "responsibilities": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "pain_points": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "turnover_level": {
+            "type": "string"
+          },
+          "hiring_difficulty": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "ai_adoption_likelihood": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          }
+        }
+      }
+    },
+    "workflows": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "workflow_name",
+          "function_name"
+        ],
+        "properties": {
+          "workflow_name": {
+            "type": "string"
+          },
+          "function_name": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "trigger": {
+            "type": "string"
+          },
+          "steps": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "inputs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "outputs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "systems_used": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "documents_used": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "people_involved": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "frequency": {
+            "type": "string"
+          },
+          "monthly_volume": {
+            "type": "number"
+          },
+          "time_per_instance_minutes": {
+            "type": "number"
+          },
+          "weekly_time_cost_hours": {
+            "type": "number"
+          },
+          "error_or_rework_level": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "bottlenecks": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "decision_points": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "customer_impact": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "financial_impact": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "data_sensitivity": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "process_maturity": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "data_readiness": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "ai_candidate_notes": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "technology_stack": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "system_name": {
+            "type": "string"
+          },
+          "vendor": {
+            "type": "string"
+          },
+          "function_served": {
+            "type": "string"
+          },
+          "users": {
+            "type": "string"
+          },
+          "data_stored": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "export_capability": {
+            "type": "string",
+            "enum": [
+              "none",
+              "manual",
+              "csv",
+              "api",
+              "unknown"
+            ]
+          },
+          "integration_capability": {
+            "type": "string",
+            "enum": [
+              "none",
+              "limited",
+              "good",
+              "strong",
+              "unknown"
+            ]
+          },
+          "satisfaction": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "limitations": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "data_assets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "asset_name": {
+            "type": "string"
+          },
+          "source_system": {
+            "type": "string"
+          },
+          "data_type": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "format": {
+            "type": "string"
+          },
+          "cleanliness": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "accessibility": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "update_frequency": {
+            "type": "string"
+          },
+          "sensitivity": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "ai_usability": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          }
+        }
+      }
+    },
+    "document_assets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "document_type": {
+            "type": "string"
+          },
+          "location": {
+            "type": "string"
+          },
+          "owner": {
+            "type": "string"
+          },
+          "quality": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "update_frequency": {
+            "type": "string"
+          },
+          "ai_use_cases": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "pain_points": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "pain_point": {
+            "type": "string"
+          },
+          "function_name": {
+            "type": "string"
+          },
+          "workflow_name": {
+            "type": "string"
+          },
+          "who_feels_it": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "frequency": {
+            "type": "string"
+          },
+          "severity": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "time_cost": {
+            "type": "string"
+          },
+          "dollar_cost": {
+            "type": "string"
+          },
+          "customer_impact": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "employee_impact": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "current_workaround": {
+            "type": "string"
+          },
+          "root_cause": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ai_readiness": {
+      "type": "object",
+      "properties": {
+        "current_ai_use": {
+          "type": "string"
+        },
+        "leadership_support": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "employee_readiness": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "data_availability": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "data_organization": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "process_documentation": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "governance_maturity": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "implementation_capacity": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "data_sensitivity_concerns": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "budget_appetite": {
+          "type": "string"
+        },
+        "timeline_expectation": {
+          "type": "string"
+        }
+      }
+    },
+    "governance_profile": {
+      "type": "object",
+      "properties": {
+        "sensitive_data_types": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "requires_human_approval": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "regulated_constraints": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "brand_review_needs": {
+          "type": "boolean"
+        },
+        "employee_decision_controls": {
+          "type": "boolean"
+        },
+        "vendor_or_customer_data_rules": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "opportunities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "opportunity_name": {
+            "type": "string"
+          },
+          "related_workflow": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "business_value_score": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "frequency_score": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "repetition_score": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "data_readiness_score": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "adoption_score": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "strategic_fit_score": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "implementation_difficulty_score": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "risk_score": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "total_score": {
+            "type": "number"
+          },
+          "complexity": {
+            "type": "string"
+          },
+          "recommended_phase": {
+            "type": "string"
+          },
+          "time_to_pilot": {
+            "type": "string"
+          },
+          "success_metrics": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

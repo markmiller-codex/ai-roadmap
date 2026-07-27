@@ -1,0 +1,78 @@
+{
+  "company_profile": {
+    "company_name": "Iona Hospitality Partners, LLC",
+    "industry": "Restaurant / Hospitality",
+    "locations": 2,
+    "employee_count": 92,
+    "annual_revenue": 7800000,
+    "customer_types": [
+      "Local professionals",
+      "Neighborhood diners",
+      "Repeat guests",
+      "Private-event guests"
+    ],
+    "revenue_sources": [
+      "Dine-in",
+      "Bar sales",
+      "Private events",
+      "Reservations",
+      "Limited takeout"
+    ],
+    "operating_model": "Two location-based management teams with centralized ownership oversight.",
+    "management_structure": "Ownership group, two general managers, kitchen leadership, bar/service leadership, administrative support.",
+    "strategic_priorities": [
+      "Reduce manager administrative load",
+      "Improve labor productivity",
+      "Improve guest retention",
+      "Strengthen hiring and onboarding",
+      "Improve operating visibility"
+    ],
+    "current_business_pressures": [
+      "Labor cost",
+      "Food cost",
+      "Manager workload",
+      "Hiring consistency",
+      "Training consistency",
+      "Guest retention",
+      "Fragmented reporting"
+    ]
+  },
+  "business_functions": [
+    {
+      "function_name": "Restaurant Operations",
+      "employee_count": 40,
+      "importance": 5,
+      "pain_level": 4
+    },
+    {
+      "function_name": "Service/Guest Experience",
+      "employee_count": 32,
+      "importance": 5,
+      "pain_level": 4
+    },
+    {
+      "function_name": "Kitchen/BOH",
+      "employee_count": 29,
+      "importance": 5,
+      "pain_level": 4
+    },
+    {
+      "function_name": "Marketing/Private Events",
+      "employee_count": 2,
+      "importance": 4,
+      "pain_level": 4
+    },
+    {
+      "function_name": "Finance/Admin",
+      "employee_count": 4,
+      "importance": 4,
+      "pain_level": 3
+    },
+    {
+      "function_name": "HR/Recruiting",
+      "employee_count": 3,
+      "importance": 4,
+      "pain_level": 5
+    }
+  ]
+}

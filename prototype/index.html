@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Roadmap Discovery App — Prototype</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div>
+      <h1>AI Roadmap Discovery App</h1>
+      <p>Adaptive SMB discovery prototype for AI Opportunity Roadmap Reports</p>
+    </div>
+    <button id="resetBtn" class="secondary">Reset Demo</button>
+  </header>
+
+  <main class="layout">
+    <section class="panel interview">
+      <div class="panel-header">
+        <h2>Discovery Interview</h2>
+        <span id="questionCounter"></span>
+      </div>
+      <div id="questionCard" class="question-card"></div>
+      <div class="actions">
+        <button id="saveNextBtn">Save & Next</button>
+        <button id="skipBtn" class="secondary">Skip</button>
+        <button id="generateBtn" class="accent">Generate Report</button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Report Readiness</h2>
+        <span id="readinessPct">0%</span>
+      </div>
+      <div class="progress"><div id="readinessBar"></div></div>
+      <div id="coverageChecklist" class="checklist"></div>
+    </section>
+
+    <section class="panel wide">
+      <div class="panel-header">
+        <h2>Structured Assessment Data</h2>
+      </div>
+      <pre id="statePreview"></pre>
+    </section>
+
+    <section class="panel wide">
+      <div class="panel-header">
+        <h2>AI Opportunity Matrix</h2>
+      </div>
+      <div id="opportunityMatrix"></div>
+    </section>
+
+    <section class="panel wide report">
+      <div class="panel-header">
+        <h2>Generated Roadmap Report</h2>
+        <button id="copyReportBtn" class="secondary">Copy Markdown</button>
+      </div>
+      <textarea id="reportOutput" placeholder="Generated report will appear here."></textarea>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

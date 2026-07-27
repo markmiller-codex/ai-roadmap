@@ -1,0 +1,42 @@
+{
+  "opportunity_score_formula": {
+    "business_value_score": 2.0,
+    "frequency_score": 1.0,
+    "repetition_score": 1.0,
+    "data_readiness_score": 1.25,
+    "adoption_score": 1.25,
+    "strategic_fit_score": 1.5,
+    "implementation_difficulty_score": -1.25,
+    "risk_score": -1.0
+  },
+  "phase_assignment": [
+    {
+      "rule": "score >= 30 and implementation_difficulty <= 2 and risk <= 3",
+      "phase": "Phase 0 or Phase 1: Quick Win"
+    },
+    {
+      "rule": "score >= 26 and implementation_difficulty <= 3",
+      "phase": "Phase 1 or Phase 2: Near-Term Project"
+    },
+    {
+      "rule": "data_readiness <= 2 or process_maturity <= 2",
+      "phase": "Foundation Project"
+    },
+    {
+      "rule": "implementation_difficulty >= 4 or risk >= 4",
+      "phase": "Phase 3 or Phase 4: Future Opportunity"
+    }
+  ],
+  "readiness_weights": {
+    "company_profile": 0.1,
+    "function_inventory": 0.1,
+    "people_roles": 0.1,
+    "workflow_detail": 0.25,
+    "technology_stack": 0.15,
+    "data_readiness": 0.1,
+    "pain_points": 0.1,
+    "governance_risk": 0.05,
+    "strategic_priorities": 0.05
+  },
+  "report_ready_threshold": 0.85
+}
