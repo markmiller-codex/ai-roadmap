@@ -11,6 +11,12 @@ export function generateReport(state: Assessment) {
   const aiScore = average([state.ai_readiness.leadership_support, state.ai_readiness.employee_readiness, state.ai_readiness.data_availability, state.ai_readiness.data_organization, state.ai_readiness.process_documentation, state.ai_readiness.governance_maturity, state.ai_readiness.implementation_capacity]);
   const totalHours = state.workflows.reduce((sum, workflow) => sum + (workflow.weekly_time_cost_hours ?? 0), 0);
   const phase = (name: string) => state.roadmap_phases.find((item) => item.phase_name === name);
+  const project = (o: Opportunity, i: number) => {
+    const workflow = state.workflows.find((item) => item.workflow_name === o.related_workflow);
+    const systems = workflow?.systems_used.length ? workflow.systems_used.join(", ") : "No source system confirmed";
+    const pain = workflow?.bottlenecks[0] || state.pain_points.find((item) => item.workflow_name === o.related_workflow)?.pain_point || "Pain point requires confirmation";
+    return `### ${i + 1}. ${o.opportunity_name}\n\n${o.description}\n\n- Business evidence: ${pain}\n- Workflow owner: ${workflow?.owner || "Owner not captured"}\n- Current technology: ${systems}\n- Data readiness: ${workflow?.data_readiness ?? "Not scored"}/5\n- Documented effort: ${workflow?.weekly_time_cost_hours ?? "Not quantified"} hours/week\n- Classification: ${o.classification}\n- Pilot timing: ${o.time_to_pilot}\n- Measures: ${list(o.success_metrics)}`;
+  };
   return `# AI Opportunity Roadmap Report
 
 ## ${c.company_name || "Company assessment"}
@@ -72,7 +78,7 @@ ${rows(state.opportunities)}
 
 ## 6. Recommended first three projects
 
-${top.map((o, i) => `### ${i + 1}. ${o.opportunity_name}\n\n${o.description}\n\n- Classification: ${o.classification}\n- Related workflow: ${o.related_workflow}\n- Pilot timing: ${o.time_to_pilot}\n- Measures: ${list(o.success_metrics)}`).join("\n\n") || "Further discovery is required before recommending projects."}
+${top.map(project).join("\n\n") || "Further discovery is required before recommending projects."}
 
 ## 7. 30/60/90-day plan
 

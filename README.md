@@ -4,12 +4,15 @@ This repository contains a working Next.js and TypeScript MVP for an adaptive SM
 
 ## Run locally
 
-Requirements: Node.js 20.9 or newer and npm.
+Requirements: Node.js 20.9 or newer, npm, and an OpenAI API key for AI-assisted interview turns.
 
 ```bash
 npm install
+cp .env.example .env.local
 npm run dev
 ```
+
+Set `OPENAI_API_KEY` in `.env.local`. The optional `OPENAI_INTERVIEW_MODEL` variable controls the server-side model and otherwise uses the documented default in `.env.example`. Never prefix the key with `NEXT_PUBLIC_`; the browser must not receive it.
 
 Open [http://localhost:3000](http://localhost:3000). Use **Load Iona sample** for a populated assessment, complete the interview, and open **Preview report** to see the generated Markdown report.
 
@@ -32,7 +35,26 @@ npm run build
 
 ## Current app status
 
-The repository is a functional, browser-only MVP. It can run an assessment from an empty state or load the complete Iona Hospitality example, adaptively select the next question, generate schema-aligned data, calculate weighted report readiness, score opportunities, and render a Markdown roadmap report. State is stored in browser `localStorage`; no server or account is required.
+The repository is a functional adaptive assessment MVP. It can run an assessment from an empty state or load the complete Iona Hospitality example, select the next question, generate schema-aligned data, calculate weighted report readiness, score opportunities, and render a Markdown roadmap report. Assessment state is stored in browser `localStorage`; AI interview turns use a server-only API route.
+
+## AI interview layer
+
+The default **AI interview** mode sends the current assessment, the latest plain-English answer, and the deterministic missing-data queue to `POST /api/ai-interview`. The server calls the OpenAI Responses API and requests a strict structured result containing the next question, rationale, targeted fields, proposed state updates, readiness impact, opportunity signals, and recommended module.
+
+Model output is treated as untrusted. The server accepts only allowlisted assessment paths, strips unknown object fields, validates primitive and collection value types, clamps 1–5 scores, and then recalculates opportunities and roadmap phases with the deterministic scoring engine. The API key remains server-side.
+
+## Deterministic fallback
+
+The original adaptive question library and `applyAnswer` parsers remain intact. Users can select **Module flow** at any time. If the API key is absent, the OpenAI request fails, or the model response is malformed, the chat UI applies the answer through the current deterministic question and clearly marks that turn as a fallback. Readiness, scoring, storage, and report generation remain deterministic in both modes.
+
+## Test the AI interview
+
+1. Copy `.env.example` to `.env.local`, add a valid `OPENAI_API_KEY`, and restart `npm run dev`.
+2. Open `http://localhost:3000`, keep **AI interview** selected, and answer the consultant question in plain English.
+3. Confirm a single follow-up question appears, **Updated from your answer** lists accepted schema paths, and report readiness changes as sections become complete.
+4. Switch to **Module flow** and confirm the deterministic interview continues from the same stored assessment.
+5. Temporarily remove the key, restart, answer another AI turn, and confirm the fallback notice appears without losing the answer.
+6. Load the Iona sample, open the report, and confirm each recommended project cites its workflow pain, owner, technology, data readiness, and documented effort.
 
 ## Core assessment engine
 
@@ -45,7 +67,7 @@ The repository is a functional, browser-only MVP. It can run an assessment from 
 
 ## Future phases
 
-The MVP intentionally does not include authentication, a database, collaboration, billing, deployment configuration, or OpenAI API calls. Likely next phases are stronger field-level editing and validation, server persistence and accounts, model-assisted answer extraction and question selection, Markdown/DOCX/PDF export, and industry overlays.
+The MVP intentionally does not include authentication, a database, collaboration, billing, or deployment configuration. Likely next phases are stronger field-level editing, server persistence and accounts, conversation persistence, Markdown/DOCX/PDF export, and industry overlays.
 
 ## What this starter includes
 
