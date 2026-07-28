@@ -1,0 +1,27 @@
+:root { --ink:#172235; --muted:#657086; --line:#dbe2ea; --paper:#fff; --bg:#f2f5f8; --brand:#155e75; --brand2:#0e7490; --ok:#13795b; --warn:#a35b10; }
+* { box-sizing:border-box; }
+body { margin:0; color:var(--ink); background:var(--bg); font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif; }
+button,.button-link,.link-control { font:inherit; }
+main { min-height:100vh; }
+.hero { display:flex; justify-content:space-between; gap:32px; align-items:flex-end; padding:54px max(24px,calc((100vw - 1180px)/2)); color:white; background:linear-gradient(125deg,#102a43,#155e75 70%,#0e7490); }
+.hero.compact { padding-top:36px; padding-bottom:36px; }
+.hero h1 { font-size:clamp(2rem,4vw,3.6rem); line-height:1; letter-spacing:-.04em; margin:8px 0 14px; max-width:720px; }
+.hero p { margin:0; max-width:680px; color:#d8eef3; line-height:1.6; }
+.eyebrow,.step { text-transform:uppercase; letter-spacing:.12em; font-size:.73rem; font-weight:800; }
+.header-actions,.actions { display:flex; gap:10px; flex-wrap:wrap; }
+button,.button-link { border:0; border-radius:10px; padding:11px 16px; background:var(--brand2); color:white; font-weight:750; cursor:pointer; text-decoration:none; }
+button:disabled { cursor:not-allowed; opacity:.5; }
+.secondary,.link-control { background:white; color:var(--ink); border:1px solid var(--line); border-radius:10px; padding:10px 15px; text-decoration:none; font-weight:700; }
+.hero .secondary { border-color:#ffffff55; }.ghost { background:transparent; border:1px solid #ffffff55; }
+.dashboard { max-width:1180px; margin:28px auto; padding:0 24px 56px; display:grid; grid-template-columns:minmax(0,1.65fr) minmax(280px,.8fr); gap:20px; }
+.panel { background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:24px; box-shadow:0 10px 35px #1722350b; }
+.wide { grid-column:1/-1; }.panel-title { display:flex; justify-content:space-between; align-items:flex-start; gap:18px; }.panel h2 { margin:5px 0 0; font-size:1.25rem; }.help,.muted { color:var(--muted); line-height:1.55; }
+textarea { width:100%; min-height:210px; resize:vertical; border:1px solid #bbc6d3; border-radius:11px; padding:14px; font:inherit; line-height:1.55; margin:8px 0 14px; outline:none; } textarea:focus { border-color:var(--brand2); box-shadow:0 0 0 3px #0e74901c; }
+.progress { height:9px; background:#e7edf2; border-radius:10px; margin:18px 0; overflow:hidden; }.progress span { display:block; height:100%; background:linear-gradient(90deg,var(--brand2),#2ca58d); }
+.checklist { display:grid; gap:8px; }.check { display:flex; justify-content:space-between; gap:12px; text-transform:capitalize; font-size:.86rem; border-bottom:1px solid #eef1f4; padding:7px 0; }.done { color:var(--ok); }.missing { color:var(--warn); }
+.table-wrap { overflow:auto; margin-top:15px; } table { width:100%; border-collapse:collapse; font-size:.9rem; } th,td { padding:12px; text-align:left; border-bottom:1px solid var(--line); vertical-align:top; } th { color:var(--muted); font-size:.76rem; text-transform:uppercase; letter-spacing:.06em; } td small { display:block; color:var(--muted); margin-top:4px; max-width:580px; }
+.classification { display:inline-block; border-radius:999px; padding:4px 9px; background:#e8f4f6; color:var(--brand); font-size:.78rem; font-weight:750; white-space:nowrap; }
+.missing-list { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:10px; padding:0; list-style:none; }.missing-list li { display:grid; gap:4px; padding:12px; border:1px solid var(--line); border-radius:10px; text-transform:capitalize; }.missing-list span { color:var(--muted); font-size:.85rem; }
+pre { white-space:pre-wrap; word-break:break-word; background:#111d2e; color:#d9e7f4; border-radius:12px; padding:18px; max-height:430px; overflow:auto; font:12px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace; }
+.report-preview { max-width:980px; margin:28px auto 60px; padding:0 24px; }.report-preview pre { max-height:none; background:white; color:var(--ink); border:1px solid var(--line); padding:clamp(22px,5vw,60px); font-size:14px; line-height:1.65; box-shadow:0 12px 45px #17223512; }
+@media (max-width:800px) { .hero { align-items:flex-start; flex-direction:column; padding:36px 24px; }.dashboard { grid-template-columns:1fr; }.wide { grid-column:auto; } }

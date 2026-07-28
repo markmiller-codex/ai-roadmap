@@ -1,0 +1,55 @@
+import type { Assessment, AssessmentQuestion, DataAsset, PainPoint, RoleGroup, Score, TechnologySystem, Workflow } from "@/types/assessment";
+import { questions } from "./questions";
+import { buildRoadmapPhases, opportunityFromWorkflow } from "./scoring";
+
+const lines = (text: string) => text.split(/\n|;/).map((line) => line.trim()).filter(Boolean);
+const columns = (line: string) => line.split(/\||—/).map((item) => item.trim());
+const score = (value: string | undefined, fallback: Score = 3): Score => Math.max(1, Math.min(5, Number(value?.match(/[1-5]/)?.[0]) || fallback)) as Score;
+const number = (value: string | undefined) => { const found = value?.match(/[\d,.]+/); return found ? Number(found[0].replace(/,/g, "")) : null; };
+const valueAfter = (line: string) => line.split(":").slice(1).join(":").trim();
+const inferFunction = (text: string) => /hire|applicant|employee|onboard/i.test(text) ? "HR/Recruiting" : /guest|customer|review/i.test(text) ? "Customer Experience" : /invoice|finance|payroll|report/i.test(text) ? "Finance/Admin" : /marketing|campaign|event/i.test(text) ? "Marketing" : "Operations";
+const inferScore = (text: string, terms: string[], base: Score = 2) => score(String(Number(base) + terms.filter((term) => text.toLowerCase().includes(term)).length));
+
+export function chooseNextQuestion(assessment: Assessment, excludedIds: string[] = []): AssessmentQuestion | null {
+  return questions.filter((question) => !excludedIds.includes(question.id) && !question.isComplete(assessment)).sort((a, b) => b.priority - a.priority)[0] ?? null;
+}
+export function getMissingData(assessment: Assessment) { return questions.filter((question) => !question.isComplete(assessment)).map((question) => ({ questionId: question.id, module: question.module, field: question.field, label: question.title })); }
+
+function parseCompanyFacts(state: Assessment, answer: string) {
+  for (const line of lines(answer)) {
+    const value = valueAfter(line); const n = number(line);
+    if (/company|name/i.test(line)) state.company_profile.company_name = value || line;
+    if (/subindustry/i.test(line)) state.company_profile.subindustry = value;
+    else if (/industry/i.test(line)) state.company_profile.industry = value;
+    if (/employee|staff|people/i.test(line) && n !== null) state.company_profile.employee_count = n;
+    if (/location|restaurant|store|office/i.test(line) && n !== null) state.company_profile.locations = n;
+    if (/revenue/i.test(line) && n !== null) state.company_profile.annual_revenue = /million|\bm\b/i.test(line) ? n * 1_000_000 : n;
+    if (/years/i.test(line) && n !== null) state.company_profile.years_in_business = n;
+  }
+}
+function parseFunctions(answer: string) { return lines(answer).map((line) => { const c = columns(line); return { function_name: c[0], employee_count: number(c[1]), manager_owner: c[2] ?? "", importance: score(c[3]), pain_level: score(c[4]), systems_used: c[5] ? c[5].split(",").map((x) => x.trim()) : [], notes: line }; }); }
+function parseRoles(answer: string): RoleGroup[] { return lines(answer).map((line) => { const c = columns(line); return { role_name: c[0], function_name: c[1] ?? "", headcount: number(c[2]), responsibilities: c[3] ? c[3].split(",").map((x) => x.trim()) : [], pain_points: c[4] ? c[4].split(",").map((x) => x.trim()) : [], turnover_level: /turnover/i.test(line) ? "Concern identified" : "Not specified", hiring_difficulty: score(c[5]), ai_adoption_likelihood: score(c[6]) }; }); }
+function parseWorkflows(answer: string): Workflow[] { return lines(answer).map((line) => { const c = columns(line); const monthlyVolume = number(c[3]); const minutes = number(c[4]); const notes = c[5] || line; return { workflow_name: c[0], function_name: c[1] || inferFunction(line), owner: c[2] ?? "", trigger: "Recurring business event", steps: ["Collect inputs", "Review or process", "Produce output"], inputs: [], outputs: [], systems_used: c[6] ? c[6].split(",").map((x) => x.trim()) : [], documents_used: [], people_involved: c[2] ? [c[2]] : [], frequency: monthlyVolume ? `${monthlyVolume} per month` : "Recurring", monthly_volume: monthlyVolume, time_per_instance_minutes: minutes, weekly_time_cost_hours: monthlyVolume && minutes ? Math.round(monthlyVolume * minutes / 60 / 4.3 * 10) / 10 : null, error_or_rework_level: inferScore(line, ["error", "rework", "inconsistent"]), bottlenecks: [notes], decision_points: [], customer_impact: inferScore(line, ["customer", "guest", "response", "review"]), financial_impact: inferScore(line, ["cost", "revenue", "labor", "margin"]), data_sensitivity: inferScore(line, ["employee", "payroll", "financial", "confidential"], 1), process_maturity: inferScore(line, ["standard", "documented", "sop"]), data_readiness: inferScore(line, ["system", "export", "csv", "spreadsheet"]), ai_candidate_notes: line }; }); }
+function parseTechnology(answer: string): TechnologySystem[] { return lines(answer).map((line) => { const c = columns(line); const exportText = (c[4] ?? "unknown").toLowerCase(); const export_capability = (["none", "manual", "csv", "api"].find((x) => exportText.includes(x)) ?? "unknown") as TechnologySystem["export_capability"]; return { system_name: c[0], vendor: c[1] ?? "", function_served: c[2] ?? inferFunction(line), users: "", data_stored: c[3] ? c[3].split(",").map((x) => x.trim()) : [], export_capability, integration_capability: /api|integration/i.test(line) ? "good" : "unknown", satisfaction: 3, limitations: c[5] ? [c[5]] : [] }; }); }
+function parseData(answer: string): DataAsset[] { return lines(answer).map((line) => { const c = columns(line); return { asset_name: c[0], source_system: c[1] ?? "", data_type: c[0], owner: c[3] ?? "", format: c[2] ?? "unknown", cleanliness: score(c[4]), accessibility: score(c[5]), update_frequency: "Not specified", sensitivity: inferScore(line, ["employee", "customer", "financial"], 1), ai_usability: score(c[6]) }; }); }
+function painPoints(workflows: Workflow[]): PainPoint[] { return workflows.map((w) => ({ pain_point: w.bottlenecks[0] || w.workflow_name, function_name: w.function_name, workflow_name: w.workflow_name, who_feels_it: w.people_involved.length ? w.people_involved : [w.owner || "Management"], frequency: w.frequency, severity: Math.max(w.error_or_rework_level, w.customer_impact, w.financial_impact) as Score, time_cost: w.weekly_time_cost_hours ? `${w.weekly_time_cost_hours} hours/week` : "Not quantified", dollar_cost: "Not quantified", customer_impact: w.customer_impact, employee_impact: 4, current_workaround: "Manual process", root_cause: w.bottlenecks[0] || "Not confirmed" })); }
+
+export function applyAnswer(current: Assessment, question: AssessmentQuestion, answer: string): Assessment {
+  const state = structuredClone(current); const id = question.id;
+  state.answers = state.answers.filter((item) => item.question_id !== id);
+  state.answers.push({ question_id: id, module: question.module, field: question.field, answer, saved_at: new Date().toISOString() });
+  if (id === "company_orientation") { state.company_profile.operating_model = answer; const employee = answer.match(/(\d+)\s+(employees|staff|people)/i); const location = answer.match(/(\d+)\s+(locations|restaurants|stores|offices)/i); if (employee) state.company_profile.employee_count = Number(employee[1]); if (location) state.company_profile.locations = Number(location[1]); if (/restaurant|hospitality/i.test(answer)) state.company_profile.industry = "Restaurant / Hospitality"; }
+  if (id === "company_facts") parseCompanyFacts(state, answer);
+  if (id === "customers_revenue") { const customerLine = lines(answer).filter((l) => /customer|client|guest/i.test(l)); const revenueLine = lines(answer).filter((l) => !/customer|client|guest/i.test(l)); state.company_profile.customer_types = customerLine.length ? customerLine.map((l) => valueAfter(l) || l) : lines(answer).slice(0, Math.ceil(lines(answer).length / 2)); state.company_profile.revenue_sources = revenueLine.length ? revenueLine.map((l) => valueAfter(l) || l) : lines(answer).slice(Math.ceil(lines(answer).length / 2)); }
+  if (id === "function_inventory") state.business_functions = parseFunctions(answer);
+  if (id === "role_inventory") state.role_groups = parseRoles(answer);
+  if (id === "workflow_inventory") { state.workflows = parseWorkflows(answer); state.pain_points = painPoints(state.workflows); }
+  if (id === "technology_inventory") state.technology_stack = parseTechnology(answer);
+  if (id === "data_inventory") state.data_assets = parseData(answer);
+  if (id === "strategic_priorities") { state.company_profile.strategic_priorities = lines(answer); state.company_profile.current_business_pressures = lines(answer); }
+  if (id === "ai_readiness") { state.ai_readiness.current_ai_use = answer; state.ai_readiness.leadership_support = inferScore(answer, ["leadership", "sponsor", "owner"]); state.ai_readiness.employee_readiness = inferScore(answer, ["employee", "staff", "open"]); state.ai_readiness.data_availability = inferScore(answer, ["data", "report", "export"]); state.ai_readiness.data_organization = inferScore(answer, ["organized", "structured", "clean"]); state.ai_readiness.process_documentation = inferScore(answer, ["documented", "sop", "checklist"]); state.ai_readiness.governance_maturity = inferScore(answer, ["policy", "approved", "governance"], 1); state.ai_readiness.implementation_capacity = inferScore(answer, ["capacity", "budget", "project", "owner"]); state.ai_readiness.budget_appetite = /budget/i.test(answer) ? "Budget discussed" : "Not specified"; state.ai_readiness.timeline_expectation = /\d+\s*(day|week|month)/i.exec(answer)?.[0] ?? "Not specified"; }
+  if (id === "governance_risk") { const all = lines(answer); state.governance_profile.sensitive_data_types = all.filter((l) => /data|employee|customer|financial|confidential/i.test(l)); state.governance_profile.requires_human_approval = all.filter((l) => /approval|review|decision|human/i.test(l)); state.governance_profile.regulated_constraints = all.filter((l) => /regulat|law|compliance|privacy/i.test(l)); if (!state.governance_profile.requires_human_approval.length) state.governance_profile.requires_human_approval = ["Customer-facing content", "Employee decisions", "Financial decisions"]; }
+  if (state.workflows.length) state.opportunities = state.workflows.map((w) => opportunityFromWorkflow(w, state)).sort((a, b) => b.total_score - a.total_score);
+  state.roadmap_phases = buildRoadmapPhases(state.opportunities); state.updated_at = new Date().toISOString();
+  return state;
+}

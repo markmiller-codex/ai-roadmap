@@ -1,0 +1,2 @@
+import type { AssessmentQuestion } from "@/types/assessment";
+export const governanceQuestions: AssessmentQuestion[] = [{ id: "governance_risk", module: "governance_risk", field: "governance_profile", title: "Define governance and risk constraints", help: "List sensitive data, regulated constraints, customer/vendor rules, and decisions or outputs that require human approval.", priority: 75, isComplete: (a) => a.governance_profile.sensitive_data_types.length > 0 && a.governance_profile.requires_human_approval.length > 0 }];

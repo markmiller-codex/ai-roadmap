@@ -1,0 +1,2 @@
+import type { AssessmentQuestion } from "@/types/assessment";
+export const peopleRoleQuestions: AssessmentQuestion[] = [{ id: "role_inventory", module: "people_roles", field: "role_groups", title: "Identify the key people and roles", help: "One per line: Role | function | headcount | responsibilities | pain points | hiring difficulty 1-5 | AI adoption likelihood 1-5.", priority: 85, isComplete: (a) => a.role_groups.length >= 2 }];

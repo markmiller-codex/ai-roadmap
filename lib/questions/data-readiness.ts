@@ -1,0 +1,2 @@
+import type { AssessmentQuestion } from "@/types/assessment";
+export const dataQuestions: AssessmentQuestion[] = [{ id: "data_inventory", module: "data_readiness", field: "data_assets", title: "Inventory useful data and documents", help: "One per line: Asset | source system | format | owner | cleanliness 1-5 | accessibility 1-5 | AI usability 1-5.", priority: 82, isComplete: (a) => a.data_assets.length >= 2 }];

@@ -1,10 +1,55 @@
 # AI Roadmap Discovery App — Starter Build Package
 
-This package contains the minimum build assets for an adaptive SMB AI Opportunity Roadmap application.
+This repository contains a working Next.js and TypeScript MVP for an adaptive SMB AI Opportunity Roadmap application, plus the original static prototype and planning assets.
+
+## Run locally
+
+Requirements: Node.js 20.9 or newer and npm.
+
+```bash
+npm install
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000). Use **Load Iona sample** for a populated assessment, complete the interview, and open **Preview report** to see the generated Markdown report.
+
+Before sharing changes, verify the production build:
+
+```bash
+npm run lint
+npm run build
+```
+
+## Application structure
+
+- `app/` — Next.js App Router pages and global styles
+- `components/` — interview, readiness, opportunity, and report UI
+- `lib/` — typed interview, scoring, readiness, report, and local-storage logic
+- `types/` — assessment domain types based on the JSON schema
+- `sample-data/` — loadable Iona Hospitality seed data
+- `prototype/` — preserved original static HTML/CSS/JavaScript prototype
+- `schemas/`, `docs/`, and `prompts/` — source requirements and build references
+
+## Current app status
+
+The repository is a functional, browser-only MVP. It can run an assessment from an empty state or load the complete Iona Hospitality example, adaptively select the next question, generate schema-aligned data, calculate weighted report readiness, score opportunities, and render a Markdown roadmap report. State is stored in browser `localStorage`; no server or account is required.
+
+## Core assessment engine
+
+- A single TypeScript `Assessment` object covers company profile, functions, roles, workflows, technology, data and documents, pain points, AI readiness, governance, scored opportunities, and roadmap phases.
+- Nine question modules cover company profile, business functions, people and roles, workflows, technology, data readiness, current AI use, strategic priorities, and governance/risk.
+- The deterministic interview controller checks coverage and chooses the highest-priority incomplete question instead of following a fixed survey.
+- Readiness uses the documented 10/10/10/25/15/10/10/5/5 weighting model.
+- Opportunity scores use business value, frequency, repetition, data readiness, adoption, strategic fit, implementation difficulty, and risk. Results are classified as Quick Win, Near-Term Project, Foundation Project, or Future Opportunity.
+- The report preview includes an executive summary, company and operating profiles, AI readiness, opportunity matrix, three recommended projects, 30/60/90-day plan, 12-month roadmap, governance recommendations, and pilot scorecard.
+
+## Future phases
+
+The MVP intentionally does not include authentication, a database, collaboration, billing, deployment configuration, or OpenAI API calls. Likely next phases are stronger field-level editing and validation, server persistence and accounts, model-assisted answer extraction and question selection, Markdown/DOCX/PDF export, and industry overlays.
 
 ## What this starter includes
 
-1. A working static prototype in `/prototype`
+1. A working Next.js/TypeScript application and the original static prototype in `/prototype`
 2. A universal SMB discovery data schema in `/schemas`
 3. A first-pass scoring model in `/schemas`
 4. A report-to-input mapping matrix in `/docs`
@@ -24,7 +69,7 @@ The MVP should do five things:
 
 ## Prototype
 
-Open:
+The original no-build prototype remains available at:
 
 `prototype/index.html`
 

@@ -1,0 +1,2 @@
+import type { AssessmentQuestion } from "@/types/assessment";
+export const workflowQuestions: AssessmentQuestion[] = [{ id: "workflow_inventory", module: "workflows", field: "workflows", title: "Describe the highest-friction recurring workflows", help: "One per line: Workflow | function | owner | monthly volume | minutes each | bottleneck | systems. Focus on work that is frequent, manual, slow, or inconsistent.", priority: 95, isComplete: (a) => a.workflows.length >= 3 && a.workflows.every((w) => Boolean(w.workflow_name && w.function_name && w.bottlenecks.length)) }];

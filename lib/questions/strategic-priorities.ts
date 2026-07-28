@@ -1,0 +1,2 @@
+import type { AssessmentQuestion } from "@/types/assessment";
+export const strategicQuestions: AssessmentQuestion[] = [{ id: "strategic_priorities", module: "strategic_priorities", field: "company_profile.strategic_priorities", title: "What outcomes should AI improve first?", help: "List at least three priorities such as growth, labor efficiency, customer experience, reporting, quality, hiring, cost, or speed.", priority: 92, isComplete: (a) => a.company_profile.strategic_priorities.length >= 3 }];

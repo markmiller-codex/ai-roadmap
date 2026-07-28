@@ -1,0 +1,6 @@
+import type { AssessmentQuestion } from "@/types/assessment";
+export const companyProfileQuestions: AssessmentQuestion[] = [
+  { id: "company_orientation", module: "company_profile", field: "company_profile.orientation", title: "Describe the business in plain English", help: "Include the company name, what it sells, who it serves, industry, employee count, locations, and operating model.", priority: 100, isComplete: (a) => Boolean(a.company_profile.operating_model) },
+  { id: "company_facts", module: "company_profile", field: "company_profile.required", title: "Confirm the core company facts", help: "Use one line each: Company name, Industry, Employees, Locations, Annual revenue, Years in business.", priority: 99, isComplete: (a) => Boolean(a.company_profile.company_name && a.company_profile.industry && a.company_profile.employee_count && a.company_profile.locations) },
+  { id: "customers_revenue", module: "company_profile", field: "company_profile.market", title: "Who are the customers and how does revenue arrive?", help: "List customer types and revenue sources, one item per line.", priority: 88, isComplete: (a) => a.company_profile.customer_types.length > 0 && a.company_profile.revenue_sources.length > 0 },
+];

@@ -1,0 +1,2 @@
+import type { AssessmentQuestion } from "@/types/assessment";
+export const businessFunctionQuestions: AssessmentQuestion[] = [{ id: "function_inventory", module: "business_functions", field: "business_functions", title: "Map the business functions", help: "One per line: Function | headcount | owner | importance 1-5 | pain 1-5 | systems.", priority: 90, isComplete: (a) => a.business_functions.length >= 3 }];

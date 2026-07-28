@@ -1,0 +1,2 @@
+import type { AssessmentQuestion } from "@/types/assessment";
+export const technologyQuestions: AssessmentQuestion[] = [{ id: "technology_inventory", module: "technology_stack", field: "technology_stack", title: "Inventory the technology stack", help: "One per line: System | vendor | function served | data stored | export capability (none/manual/csv/api) | limitations.", priority: 80, isComplete: (a) => a.technology_stack.length >= 3 }];
