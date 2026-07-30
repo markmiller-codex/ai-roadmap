@@ -31,7 +31,8 @@ function renderLines(lines: string[], sectionKey: string) {
     const paragraph: string[] = [];
     while (index < lines.length) {
       const candidate = lines[index].trim();
-      if (!candidate || candidate.startsWith("### ") || candidate.startsWith("- ") || candidate.startsWith("| ")) break;
+      const startsTable = candidate.startsWith("| ") && index + 1 < lines.length && isDivider(lines[index + 1].trim());
+      if (!candidate || candidate.startsWith("### ") || candidate.startsWith("- ") || startsTable) break;
       paragraph.push(candidate); index += 1;
     }
     content.push(<p key={`${sectionKey}-p-${index}`}>{paragraph.join(" ").replaceAll("**", "")}</p>);

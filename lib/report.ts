@@ -1,62 +1,80 @@
 import { calculateReadiness } from "./readiness";
+import { getSpecificAssessmentGaps } from "./report-coverage";
 import type { Assessment, Opportunity } from "@/types/assessment";
 
-const list = (items: string[]) => items.length ? items.join(", ") : "Not captured";
-const money = (value: number | null) => value === null ? "Not captured" : new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(value);
-const rows = (items: Opportunity[]) => items.length ? items.map((o, i) => `| ${i + 1} | ${o.opportunity_name} | ${o.total_score} | ${o.classification} | ${o.time_to_pilot} |`).join("\n") : "| — | No opportunities scored | — | — | — |";
-const average = (values: Array<number | null>) => { const available = values.filter((value): value is number => value !== null); return available.length ? Math.round(available.reduce((a, b) => a + b, 0) / available.length * 10) / 10 : 0; };
+const list = (items: string[] | undefined) => items?.length ? items.join(", ") : "Not captured";
+const money = (value: number | null) => value === null ? "Not captured" : new Intl.NumberFormat("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0}).format(value);
+const average = (values:Array<number|null>) => { const available=values.filter((value):value is number=>value!==null); return available.length ? Math.round(available.reduce((a,b)=>a+b,0)/available.length*10)/10 : 0; };
+const metricRows = (a:Assessment) => a.operating_metrics.map((m)=>`| ${m.metric_name} | ${m.value.toLocaleString()} ${m.unit} | ${m.period} | ${m.source} |`).join("\n") || "| — | Not captured | — | — |";
+const opportunityRows = (items:Opportunity[]) => items.map((o,i)=>`| ${i+1} | ${o.opportunity_name} | ${o.owner || "Not captured"} | ${o.total_score} | ${o.classification} | ${o.recommended_phase} | ${o.time_to_pilot} |`).join("\n") || "| — | No opportunities scored | — | — | — | — | — |";
+const targetRows = (opportunity:Opportunity) => (opportunity.target_metrics ?? []).map((m)=>`| ${m.metric_name} | ${m.baseline} | ${m.target} | ${m.measurement_period} | ${m.source} |`).join("\n") || "| Metric not captured | — | — | — | — |";
 
-export function generateReport(state: Assessment) {
-  const c = state.company_profile; const readiness = calculateReadiness(state); const top = state.opportunities.slice(0, 3);
-  const aiScore = average([state.ai_readiness.leadership_support, state.ai_readiness.employee_readiness, state.ai_readiness.data_availability, state.ai_readiness.data_organization, state.ai_readiness.process_documentation, state.ai_readiness.governance_maturity, state.ai_readiness.implementation_capacity]);
-  const totalHours = state.workflows.reduce((sum, workflow) => sum + (workflow.weekly_time_cost_hours ?? 0), 0);
-  const phase = (name: string) => state.roadmap_phases.find((item) => item.phase_name === name);
-  const project = (o: Opportunity, i: number) => {
-    const workflow = state.workflows.find((item) => item.workflow_name === o.related_workflow);
-    const systems = workflow?.systems_used.length ? workflow.systems_used.join(", ") : "No source system confirmed";
-    const pain = workflow?.bottlenecks[0] || state.pain_points.find((item) => item.workflow_name === o.related_workflow)?.pain_point || "Pain point requires confirmation";
-    return `### ${i + 1}. ${o.opportunity_name}\n\n${o.description}\n\n- Business evidence: ${pain}\n- Workflow owner: ${workflow?.owner || "Owner not captured"}\n- Current technology: ${systems}\n- Data readiness: ${workflow?.data_readiness ?? "Not scored"}/5\n- Documented effort: ${workflow?.weekly_time_cost_hours ?? "Not quantified"} hours/week\n- Classification: ${o.classification}\n- Pilot timing: ${o.time_to_pilot}\n- Measures: ${list(o.success_metrics)}`;
-  };
+function projectProfile(o:Opportunity,index:number) {
+  return `### ${index+1}. ${o.opportunity_name}
+
+${o.description}
+
+- Business evidence: ${list(o.business_evidence)}
+- Accountable owner: ${o.owner || "Not captured"}
+- Related workflow: ${o.related_workflow}
+- Classification / phase: ${o.classification} / ${o.recommended_phase}
+- Pilot timing: ${o.time_to_pilot}
+- Tool categories: ${list(o.tool_categories)}
+- Implementation dependencies: ${list(o.implementation_dependencies)}
+- Success measures: ${list(o.success_metrics)}
+
+| Metric | Baseline | Target | Measurement period | Source |
+|---|---|---|---|---|
+${targetRows(o)}`;
+}
+
+export function generateReport(state:Assessment) {
+  const c=state.company_profile, readiness=calculateReadiness(state), top=state.opportunities.slice(0,5), aiScore=average([state.ai_readiness.leadership_support,state.ai_readiness.employee_readiness,state.ai_readiness.data_availability,state.ai_readiness.data_organization,state.ai_readiness.process_documentation,state.ai_readiness.governance_maturity,state.ai_readiness.implementation_capacity]);
+  const totalHours=state.workflows.reduce((sum,w)=>sum+(w.weekly_time_cost_hours??0),0); const phase2=state.opportunities.filter((o)=>o.recommended_phase==="Phase 2"), phase3=state.opportunities.filter((o)=>o.recommended_phase==="Phase 3"); const gaps=getSpecificAssessmentGaps(state);
   return `# AI Opportunity Roadmap Report
 
 ## ${c.company_name || "Company assessment"}
 
 **Industry:** ${c.industry || "Not captured"}  
-**Assessment readiness:** ${readiness.percent}%  
+**Target-report readiness:** ${readiness.percent}%
+
 **AI readiness:** ${aiScore}/5
+**Opportunity portfolio:** ${state.opportunities.length} scored opportunities
 
 ## 1. Executive summary
 
-${c.company_name || "The company"} operates ${c.locations ?? "an unconfirmed number of"} location(s) with ${c.employee_count ?? "an unconfirmed number of"} employees. The assessment identified ${state.workflows.length} priority workflows, approximately ${totalHours} documented hours of weekly process effort, and ${state.opportunities.length} scored AI opportunities. The recommended first projects are ${top.length ? top.map((o) => o.opportunity_name).join(", ") : "pending further discovery"}.
+${c.company_name || "The company"} is a ${c.locations ?? "location count not captured"}-location ${c.subindustry || c.industry || "business"} with ${c.employee_count ?? "unconfirmed"} employees and ${money(c.annual_revenue)} in annual revenue. Discovery documented ${state.operating_metrics.length} operating metrics, ${state.workflows.length} significant workflows, ${Math.round(totalHours*10)/10} weekly hours of recurring process burden, and ${state.opportunities.length} AI opportunities. The recommended sequence begins with ${top.slice(0,3).map((o)=>o.opportunity_name).join(", ") || "further discovery"}, governed by human approval and measured against explicit baselines.
 
 ## 2. Business profile
 
 | Category | Current profile |
 |---|---|
 | Company | ${c.company_name || "Not captured"} |
-| Industry | ${c.industry || "Not captured"}${c.subindustry ? ` — ${c.subindustry}` : ""} |
+| Industry | ${c.industry || "Not captured"} — ${c.subindustry || "Not captured"} |
 | Employees / locations | ${c.employee_count ?? "Not captured"} / ${c.locations ?? "Not captured"} |
 | Annual revenue | ${money(c.annual_revenue)} |
-| Customer types | ${list(c.customer_types)} |
+| Management structure | ${c.management_structure || "Not captured"} |
+| Customer segments | ${list(c.customer_types)} |
 | Revenue sources | ${list(c.revenue_sources)} |
 | Operating model | ${c.operating_model || "Not captured"} |
 
 ## 3. Operating snapshot
 
-| Measure | Identified |
-|---|---:|
-| Business functions | ${state.business_functions.length} |
-| Role groups | ${state.role_groups.length} |
-| Workflows | ${state.workflows.length} |
-| Technology systems | ${state.technology_stack.length} |
-| Data and document assets | ${state.data_assets.length + state.document_assets.length} |
-| Pain points | ${state.pain_points.length} |
+| Operating metric | Value | Period | Source |
+|---|---:|---|---|
+${metricRows(state)}
 
-Highest-pain functions: ${state.business_functions.filter((f) => f.pain_level >= 4).map((f) => f.function_name).join(", ") || "Not captured"}.
+Employee and role breakdown: ${state.role_groups.map((role)=>`${role.role_name}: ${role.headcount ?? "?"}`).join("; ") || "Not captured"}.
 
-## 4. AI readiness score
+## 4. Current-state AI and technology assessment
 
-**Overall AI readiness: ${aiScore}/5**
+Current AI use: ${state.ai_readiness.current_ai_use || "Not captured"} Formal AI policy: ${state.ai_readiness.formal_ai_policy === false ? "No" : state.ai_readiness.formal_ai_policy ? "Yes" : "Not captured"}. Structured AI training: ${state.ai_readiness.structured_ai_training === false ? "No" : state.ai_readiness.structured_ai_training ? "Yes" : "Not captured"}.
+
+| System | Function | Data | Export | Integration | Limitations |
+|---|---|---|---|---|---|
+${state.technology_stack.map((s)=>`| ${s.system_name} | ${s.function_served} | ${list(s.data_stored)} | ${s.export_capability} | ${s.integration_capability} | ${list(s.limitations)} |`).join("\n") || "| — | — | — | — | — | Not captured |"}
+
+## 5. AI readiness score and interpretation
 
 | Dimension | Score |
 |---|---:|
@@ -68,59 +86,78 @@ Highest-pain functions: ${state.business_functions.filter((f) => f.pain_level >=
 | Governance maturity | ${state.ai_readiness.governance_maturity ?? "—"} |
 | Implementation capacity | ${state.ai_readiness.implementation_capacity ?? "—"} |
 
-Current AI use: ${state.ai_readiness.current_ai_use || "Not captured"}
+Interpretation: leadership support and usable exports create a credible pilot path, while governance, training, data ownership, and manager capacity should be treated as explicit implementation work—not assumed away.
 
-## 5. Opportunity matrix
+## 6. Strategic AI goals
 
-| Rank | Opportunity | Score | Classification | Time to pilot |
-|---:|---|---:|---|---|
-${rows(state.opportunities)}
+${c.strategic_priorities.map((goal)=>`- ${goal}`).join("\n") || "- Not captured"}
 
-## 6. Recommended first three projects
+## 7. AI opportunity portfolio
 
-${top.map(project).join("\n\n") || "Further discovery is required before recommending projects."}
+| Rank | Opportunity | Owner | Score | Classification | Phase | Pilot timing |
+|---:|---|---|---:|---|---|---|
+${opportunityRows(state.opportunities)}
 
-## 7. 30/60/90-day plan
+## 8. Priority AI projects
 
-### Days 1–30 — Foundation
-${(phase("Foundation")?.objectives ?? ["Confirm owners, baselines, and governance rules"]).map((item) => `- ${item}`).join("\n")}
+${top.map(projectProfile).join("\n\n") || "Further discovery is required before recommending projects."}
 
-### Days 31–60 — Pilot
-${(phase("Pilot")?.objectives ?? ["Launch the first low-risk pilot"]).map((item) => `- ${item}`).join("\n")}
+## 9. Phase 2 projects
 
-### Days 61–90 — Validate and expand
-${(phase("Validate and expand")?.objectives ?? ["Measure results and expand proven workflows"]).map((item) => `- ${item}`).join("\n")}
+${phase2.map((o)=>`- ${o.opportunity_name}: ${o.description} Owner: ${o.owner || "Not captured"}. Target: ${o.target_metrics?.[0]?.target || "Not captured"}.`).join("\n") || "- No Phase 2 projects are ready."}
 
-## 8. 12-month roadmap
+## 10. Phase 3 projects
 
-- **Months 1–3:** Complete governance, baselines, quick-win pilots, and adoption review.
-- **Months 4–6:** Expand successful near-term projects and improve data access.
-- **Months 7–9:** Standardize reusable prompts, operating procedures, and measurement.
-- **Months 10–12:** Evaluate higher-complexity integrations only where pilots proved value.
+${phase3.map((o)=>`- ${o.opportunity_name}: ${o.description} Dependencies: ${list(o.implementation_dependencies)}.`).join("\n") || "- No Phase 3 projects are ready."}
 
-Future opportunities: ${state.opportunities.filter((o) => o.classification === "Future Opportunity").map((o) => o.opportunity_name).join(", ") || "None currently classified"}.
+## 11. 24-month roadmap
 
-## 9. Governance recommendations
+${state.roadmap_phases.map((p)=>`### ${p.timeframe} — ${p.phase_name}\n\nProjects: ${list(p.opportunity_names)}\n\n${p.objectives.map((item)=>`- ${item}`).join("\n")}\n\nSuccess measures: ${list(p.success_measures)}.`).join("\n\n") || "Roadmap phases require further discovery."}
+
+## 12. Implementation complexity guide
+
+| Project | Complexity | Risk | Data readiness | Key dependencies |
+|---|---|---:|---:|---|
+${top.map((o)=>`| ${o.opportunity_name} | ${o.complexity} | ${o.risk_score}/5 | ${o.data_readiness_score}/5 | ${list(o.implementation_dependencies)} |`).join("\n") || "| — | — | — | — | Not captured |"}
+
+## 13. Governance and control rules
 
 - Sensitive data: ${list(state.governance_profile.sensitive_data_types)}.
-- Human approval required for: ${list(state.governance_profile.requires_human_approval)}.
+- Human approval required: ${list(state.governance_profile.requires_human_approval)}.
 - Regulatory constraints: ${list(state.governance_profile.regulated_constraints)}.
-- Use approved tools and minimum-necessary data.
-- Keep humans accountable for employee, customer, financial, and public decisions.
-- Log pilot owners, inputs, outputs, exceptions, and review results.
+- Vendor/customer data rules: ${list(state.governance_profile.vendor_or_customer_data_rules)}.
+- Keep humans accountable for employee, customer, financial, and public decisions; log pilot inputs, outputs, exceptions, approvals, and review results.
 
-## 10. Pilot scorecard
+## 14. Tool category recommendations
 
-| Metric | Baseline | 30-day | 60-day | 90-day |
+${top.map((o)=>`- ${o.opportunity_name}: ${list(o.tool_categories)}.`).join("\n") || "- Tool categories require project definition."}
+
+## 15. First 90-day implementation plan
+
+${state.roadmap_phases.slice(0,3).map((p)=>`### ${p.timeframe} — ${p.phase_name}\n\nProjects: ${list(p.opportunity_names)}\n\n${p.objectives.map((item)=>`- ${item}`).join("\n")}`).join("\n\n") || "A 90-day plan requires named projects and owners."}
+
+## 16. Pilot scorecard
+
+| Project | Metric | Baseline | Target | Review period |
 |---|---|---|---|---|
-| Weekly hours spent | Measure before pilot | Track | Reduce 15% | Reduce 25% |
-| Cycle time | Measure before pilot | Track | Reduce 15% | Reduce 25% |
-| Output quality / rework | Measure before pilot | Track | Improve 10% | Improve 20% |
-| Active-user adoption | 0% | 50% | 70% | 80%+ |
-| Exceptions requiring escalation | Measure before pilot | Track | Review pattern | Establish control target |
+${top.slice(0,3).flatMap((o)=>(o.target_metrics ?? []).map((m)=>`| ${o.opportunity_name} | ${m.metric_name} | ${m.baseline} | ${m.target} | ${m.measurement_period} |`)).join("\n") || "| — | — | — | — | — |"}
+
+## 17. Management decisions required
+
+${state.management_decisions.map((decision)=>`- ${decision}`).join("\n") || "- Name a sponsor, owners, approved tools, governance rules, baselines, and pilot stage gates."}
+
+## 18. Final recommendation
+
+Begin with ${top[0]?.opportunity_name || "a tightly scoped, low-risk workflow"} under ${top[0]?.owner || "a named business owner"}, then add ${top[1]?.opportunity_name || "a second evidence-backed pilot"}. Do not authorize portfolio-scale automation until management approves governance, validates baselines, trains users, and reviews 60- and 90-day scorecards. The objective is measured operating improvement—not AI adoption for its own sake.
+
+## 19. Appendix — opportunity prioritization summary
+
+| Rank | Opportunity | Owner | Score | Classification | Phase | Pilot timing |
+|---:|---|---|---:|---|---|---|
+${opportunityRows(state.opportunities)}
 
 ## Assessment gaps
 
-${readiness.missingFields.map((item) => `- ${item}`).join("\n") || "- No required MVP coverage gaps remain."}
+${gaps.map((gap)=>`- ${gap}`).join("\n") || "- No target-report coverage gaps remain."}
 `;
 }

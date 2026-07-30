@@ -67,7 +67,10 @@ Load the **Iona sample**, open **Report preview**, and click **Print Report**. I
 - The deterministic interview controller checks coverage and chooses the highest-priority incomplete question instead of following a fixed survey.
 - Readiness uses the documented 10/10/10/25/15/10/10/5/5 weighting model.
 - Opportunity scores use business value, frequency, repetition, data readiness, adoption, strategic fit, implementation difficulty, and risk. Results are classified as Quick Win, Near-Term Project, Foundation Project, or Future Opportunity.
-- The report preview includes an executive summary, company and operating profiles, AI readiness, opportunity matrix, three recommended projects, 30/60/90-day plan, 12-month roadmap, governance recommendations, and pilot scorecard.
+- The report preview includes an executive summary, detailed company and operating profiles, AI readiness, a 10-opportunity portfolio, five priority-project profiles, a 30/60/90-day plan, a 24-month roadmap, governance recommendations, and a pilot scorecard.
+- Target-report readiness now evaluates 19 final-report sections. Full readiness requires a rich operating snapshot, 8–10 significant workflows, role and technology depth, data/document assets, governance, baselines, targets, dependencies, tool categories, phase coverage, and explicit management decisions.
+- The rich Iona fixture includes 13 operating metrics, four workforce groups, ten detailed workflows, six core systems, ten scored opportunities, project baselines and targets, and a 24-month roadmap.
+- Reports now include five detailed priority-project profiles, Phase 2 and Phase 3 portfolios, implementation complexity, tool categories, management decisions, a final recommendation, and specific assessment gaps.
 
 ## Future phases
 

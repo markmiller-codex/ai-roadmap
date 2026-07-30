@@ -1,4 +1,4 @@
-import type { Assessment, QuestionModuleId, Score } from "@/types/assessment";
+import type { Assessment, MetricTarget, QuestionModuleId, Score } from "@/types/assessment";
 import { buildRoadmapPhases, opportunityFromWorkflow } from "./scoring";
 
 export interface ProposedStateUpdate { path: string; value: unknown; }
@@ -12,7 +12,7 @@ export interface AIInterviewResult {
   next_recommended_module: QuestionModuleId;
 }
 
-type Kind = "string" | "number" | "nullable-number" | "boolean" | "score" | "nullable-score" | "string-array";
+type Kind = "string" | "number" | "nullable-number" | "boolean" | "score" | "nullable-score" | "string-array" | "metric-array";
 const leafRules: Record<string, Kind> = {
   "company_profile.company_name": "string", "company_profile.industry": "string", "company_profile.subindustry": "string",
   "company_profile.locations": "nullable-number", "company_profile.employee_count": "nullable-number", "company_profile.annual_revenue": "nullable-number", "company_profile.years_in_business": "nullable-number",
@@ -23,6 +23,7 @@ const leafRules: Record<string, Kind> = {
   "ai_readiness.data_sensitivity_concerns": "string-array", "ai_readiness.budget_appetite": "string", "ai_readiness.timeline_expectation": "string",
   "governance_profile.sensitive_data_types": "string-array", "governance_profile.requires_human_approval": "string-array", "governance_profile.regulated_constraints": "string-array",
   "governance_profile.brand_review_needs": "boolean", "governance_profile.employee_decision_controls": "boolean", "governance_profile.vendor_or_customer_data_rules": "string-array",
+  "management_decisions": "string-array",
 };
 
 const recordRules: Record<string, Record<string, Kind>> = {
@@ -33,6 +34,8 @@ const recordRules: Record<string, Record<string, Kind>> = {
   data_assets: { asset_name:"string", source_system:"string", data_type:"string", owner:"string", format:"string", cleanliness:"score", accessibility:"score", update_frequency:"string", sensitivity:"score", ai_usability:"score" },
   document_assets: { document_type:"string", location:"string", owner:"string", quality:"score", update_frequency:"string", ai_use_cases:"string-array" },
   pain_points: { pain_point:"string", function_name:"string", workflow_name:"string", who_feels_it:"string-array", frequency:"string", severity:"score", time_cost:"string", dollar_cost:"string", customer_impact:"score", employee_impact:"score", current_workaround:"string", root_cause:"string" },
+  operating_metrics: { metric_name:"string", value:"number", unit:"string", period:"string", source:"string", business_context:"string" },
+  workflow_evidence: { workflow_name:"string", data_sources:"string-array", current_process_quality:"string", business_impact:"string", baseline_metrics:"metric-array", target_metrics:"metric-array", implementation_dependencies:"string-array", suggested_ai_use_cases:"string-array", roadmap_phase:"string", pilot_timing:"string", success_measures:"string-array", implementation_complexity_factors:"string-array" },
 };
 
 const cleanString = (value: unknown) => typeof value === "string" ? value.trim().slice(0, 2000) : undefined;
@@ -45,6 +48,7 @@ function clean(value: unknown, kind: Kind): unknown {
   if (kind === "string") return cleanString(value);
   if (kind === "boolean") return typeof value === "boolean" ? value : undefined;
   if (kind === "string-array") return Array.isArray(value) ? value.map(cleanString).filter((item): item is string => Boolean(item)).slice(0, 50) : undefined;
+  if (kind === "metric-array" && Array.isArray(value)) return value.flatMap((item): MetricTarget[] => { if (!item || typeof item !== "object") return []; const metric=item as Record<string,unknown>; const metric_name=cleanString(metric.metric_name), baseline=cleanString(metric.baseline), target=cleanString(metric.target), measurement_period=cleanString(metric.measurement_period), source=cleanString(metric.source); return metric_name && baseline && target && measurement_period && source ? [{metric_name,baseline,target,measurement_period,source}] : []; }).slice(0,20);
   if (kind === "nullable-number" && value === null) return null;
   if (kind === "nullable-score" && value === null) return null;
   if (["number", "nullable-number", "score", "nullable-score"].includes(kind) && typeof value === "number" && Number.isFinite(value)) {
@@ -54,6 +58,7 @@ function clean(value: unknown, kind: Kind): unknown {
 }
 
 function setLeaf(state: Assessment, path: string, value: unknown) {
+  if (path === "management_decisions" && Array.isArray(value)) { state.management_decisions=value as string[]; return; }
   const [group, field] = path.split(".");
   if (!group || !field) return;
   const target = state[group as keyof Assessment];
@@ -87,7 +92,8 @@ export function applyAIUpdates(current: Assessment, updates: ProposedStateUpdate
     const rules = recordRules[update.path];
     if (rules) {
       const records = cleanRecords(update.value, rules);
-      if (records) { (state as unknown as Record<string, unknown>)[update.path] = records; applied.push(update.path); }
+      if (records && update.path === "workflow_evidence") { for (const record of records) { const evidence=record as Record<string,unknown>; const workflow=state.workflows.find((item)=>item.workflow_name.toLowerCase()===String(evidence.workflow_name).toLowerCase()); if (workflow) Object.assign(workflow,evidence); } applied.push(update.path); }
+      else if (records) { (state as unknown as Record<string, unknown>)[update.path] = records; applied.push(update.path); }
     }
   }
   if (state.workflows.length) state.opportunities = state.workflows.map((workflow) => opportunityFromWorkflow(workflow, state)).sort((a, b) => b.total_score - a.total_score);
@@ -103,6 +109,6 @@ export const aiInterviewJsonSchema = {
     assistant_question: { type:"string" }, rationale_for_question: { type:"string" }, fields_targeted: { type:"array", items:{type:"string"} },
     proposed_state_updates: { type:"array", items:{ type:"object", additionalProperties:false, required:["path","value"], properties:{ path:{type:"string"}, value:{type:"string"} } } },
     readiness_impact: { type:"object", additionalProperties:false, required:["before_percent","after_percent","completed_sections"], properties:{ before_percent:{type:"number"}, after_percent:{type:"number"}, completed_sections:{type:"array",items:{type:"string"}} } },
-    opportunity_signals: { type:"array", items:{type:"string"} }, next_recommended_module: { type:"string", enum:["company_profile","business_functions","people_roles","workflows","technology_stack","data_readiness","current_ai_use","strategic_priorities","governance_risk"] },
+    opportunity_signals: { type:"array", items:{type:"string"} }, next_recommended_module: { type:"string", enum:["company_profile","operating_metrics","business_functions","people_roles","workflows","workflow_detail","technology_stack","data_readiness","current_ai_use","pain_points","baseline_metrics","strategic_priorities","governance_risk","implementation_capacity","success_metrics"] },
   },
 } as const;
