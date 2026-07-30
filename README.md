@@ -56,6 +56,10 @@ The original adaptive question library and `applyAnswer` parsers remain intact. 
 5. Temporarily remove the key, restart, answer another AI turn, and confirm the fallback notice appears without losing the answer.
 6. Load the Iona sample, open the report, and confirm each recommended project cites its workflow pain, owner, technology, data readiness, and documented effort.
 
+## Print or save the report as PDF
+
+Load the **Iona sample**, open **Report preview**, and click **Print Report**. In the browser print dialog, select a printer or choose **Save as PDF**. The print layout includes only the report content and formats headings, tables, margins, and page breaks for a clean deliverable.
+
 ## Core assessment engine
 
 - A single TypeScript `Assessment` object covers company profile, functions, roles, workflows, technology, data and documents, pain points, AI readiness, governance, scored opportunities, and roadmap phases.

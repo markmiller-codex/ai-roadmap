@@ -36,7 +36,12 @@ const recordRules: Record<string, Record<string, Kind>> = {
 };
 
 const cleanString = (value: unknown) => typeof value === "string" ? value.trim().slice(0, 2000) : undefined;
+function decoded(value: unknown, kind: Kind | "records") {
+  if (kind === "string" || typeof value !== "string") return value;
+  try { return JSON.parse(value) as unknown; } catch { return value; }
+}
 function clean(value: unknown, kind: Kind): unknown {
+  value = decoded(value, kind);
   if (kind === "string") return cleanString(value);
   if (kind === "boolean") return typeof value === "boolean" ? value : undefined;
   if (kind === "string-array") return Array.isArray(value) ? value.map(cleanString).filter((item): item is string => Boolean(item)).slice(0, 50) : undefined;
@@ -56,6 +61,7 @@ function setLeaf(state: Assessment, path: string, value: unknown) {
 }
 
 function cleanRecords(value: unknown, rules: Record<string, Kind>) {
+  value = decoded(value, "records");
   if (!Array.isArray(value)) return undefined;
   return value.slice(0, 50).flatMap((item) => {
     if (!item || typeof item !== "object" || Array.isArray(item)) return [];
@@ -95,7 +101,7 @@ export const aiInterviewJsonSchema = {
   required: ["assistant_question","rationale_for_question","fields_targeted","proposed_state_updates","readiness_impact","opportunity_signals","next_recommended_module"],
   properties: {
     assistant_question: { type:"string" }, rationale_for_question: { type:"string" }, fields_targeted: { type:"array", items:{type:"string"} },
-    proposed_state_updates: { type:"array", items:{ type:"object", additionalProperties:false, required:["path","value"], properties:{ path:{type:"string"}, value:{} } } },
+    proposed_state_updates: { type:"array", items:{ type:"object", additionalProperties:false, required:["path","value"], properties:{ path:{type:"string"}, value:{type:"string"} } } },
     readiness_impact: { type:"object", additionalProperties:false, required:["before_percent","after_percent","completed_sections"], properties:{ before_percent:{type:"number"}, after_percent:{type:"number"}, completed_sections:{type:"array",items:{type:"string"}} } },
     opportunity_signals: { type:"array", items:{type:"string"} }, next_recommended_module: { type:"string", enum:["company_profile","business_functions","people_roles","workflows","technology_stack","data_readiness","current_ai_use","strategic_priorities","governance_risk"] },
   },
