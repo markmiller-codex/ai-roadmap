@@ -1,5 +1,6 @@
 import { calculateReadiness } from "./readiness";
 import { getSpecificAssessmentGaps } from "./report-coverage";
+import { getMissingData } from "./interview";
 import type { Assessment, Opportunity } from "@/types/assessment";
 
 const list = (items: string[] | undefined) => items?.length ? items.join(", ") : "Not captured";
@@ -30,7 +31,7 @@ ${targetRows(o)}`;
 
 export function generateReport(state:Assessment) {
   const c=state.company_profile, readiness=calculateReadiness(state), top=state.opportunities.slice(0,5), aiScore=average([state.ai_readiness.leadership_support,state.ai_readiness.employee_readiness,state.ai_readiness.data_availability,state.ai_readiness.data_organization,state.ai_readiness.process_documentation,state.ai_readiness.governance_maturity,state.ai_readiness.implementation_capacity]);
-  const totalHours=state.workflows.reduce((sum,w)=>sum+(w.weekly_time_cost_hours??0),0); const phase2=state.opportunities.filter((o)=>o.recommended_phase==="Phase 2"), phase3=state.opportunities.filter((o)=>o.recommended_phase==="Phase 3"); const gaps=getSpecificAssessmentGaps(state);
+  const totalHours=state.workflows.reduce((sum,w)=>sum+(w.weekly_time_cost_hours??0),0); const phase2=state.opportunities.filter((o)=>o.recommended_phase==="Phase 2"), phase3=state.opportunities.filter((o)=>o.recommended_phase==="Phase 3"); const gaps=getSpecificAssessmentGaps(state); const completedSections=readiness.sections.filter((section)=>section.complete); const nextQuestions=getMissingData(state).slice(0,8);
   return `# AI Opportunity Roadmap Report
 
 ## ${c.company_name || "Company assessment"}
@@ -159,5 +160,21 @@ ${opportunityRows(state.opportunities)}
 ## Assessment gaps
 
 ${gaps.map((gap)=>`- ${gap}`).join("\n") || "- No target-report coverage gaps remain."}
+
+## Draft report status
+
+**Readiness:** ${readiness.percent}% (${completedSections.length} of ${readiness.sections.length} target report sections complete)
+
+Completed sections:
+
+${completedSections.map((section)=>`- ${section.label}`).join("\n") || "- No target sections are complete yet; the available content remains an early draft."}
+
+Draft recommendations available now:
+
+${top.slice(0,3).map((opportunity)=>`- ${opportunity.opportunity_name}: ${opportunity.classification}, ${opportunity.recommended_phase}.`).join("\n") || "- Complete workflow discovery to generate recommendations."}
+
+## Next recommended questions
+
+${nextQuestions.map((question,index)=>`${index+1}. ${question.label}`).join("\n") || "1. No required deterministic questions remain; review specific report gaps above."}
 `;
 }

@@ -72,9 +72,19 @@ Load the **Iona sample**, open **Report preview**, and click **Print Report**. I
 - The rich Iona fixture includes 13 operating metrics, four workforce groups, ten detailed workflows, six core systems, ten scored opportunities, project baselines and targets, and a 24-month roadmap.
 - Reports now include five detailed priority-project profiles, Phase 2 and Phase 3 portfolios, implementation complexity, tool categories, management decisions, a final recommendation, and specific assessment gaps.
 
+## Session persistence and portability
+
+The assessment is saved automatically in browser `localStorage` under the existing `ai-roadmap-assessment-v2` key, so refreshing the page resumes the current state. Timestamped interview history and the generated report snapshot are stored under a companion metadata key.
+
+- **Save Session** explicitly saves the structured assessment, interview history, module answers, readiness, coverage checklist, opportunity scores, and report draft.
+- **Export Session JSON** downloads a dated, company-named portable session snapshot.
+- **Import Session JSON** validates and restores a previous export so the assessment can continue.
+- **Start new assessment** and **Load Iona sample** require confirmation before replacing the current browser session.
+- Report preview is available throughout discovery and shows current recommendations, completed sections, specific gaps, readiness, and next recommended questions.
+
 ## Future phases
 
-The MVP intentionally does not include authentication, a database, collaboration, billing, or deployment configuration. Likely next phases are stronger field-level editing, server persistence and accounts, conversation persistence, Markdown/DOCX/PDF export, and industry overlays.
+The MVP intentionally does not include authentication, a database, collaboration, billing, or deployment configuration. Likely next phases are stronger field-level editing, server persistence and accounts, Markdown/DOCX/PDF export, and industry overlays.
 
 ## What this starter includes
 
