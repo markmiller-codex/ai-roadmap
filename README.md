@@ -71,6 +71,9 @@ Load the **Iona sample**, open **Report preview**, and click **Print Report**. I
 - Target-report readiness now evaluates 19 final-report sections. Full readiness requires a rich operating snapshot, 8–10 significant workflows, role and technology depth, data/document assets, governance, baselines, targets, dependencies, tool categories, phase coverage, and explicit management decisions.
 - The rich Iona fixture includes 13 operating metrics, four workforce groups, ten detailed workflows, six core systems, ten scored opportunities, project baselines and targets, and a 24-month roadmap.
 - Reports now include five detailed priority-project profiles, Phase 2 and Phase 3 portfolios, implementation complexity, tool categories, management decisions, a final recommendation, and specific assessment gaps.
+- A structured `capturedFacts` evidence ledger preserves each numeric or factual value with its label, unit, period, business area, workflow link, confidence, verification sources, related fields, originating answer, and timestamp.
+- Deterministic and AI-assisted interview turns both write labeled evidence; ambiguous values trigger an immediate clarification question, while labeled evidence prevents already-answered questions from returning to the missing-data queue.
+- The interview UI displays **Captured facts from your answer**, and the report includes the same evidence ledger for auditability.
 
 ## Session persistence and portability
 

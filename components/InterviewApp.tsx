@@ -8,15 +8,16 @@ import { createIonaAssessment } from "@/lib/sample";
 import { exportSessionFile, hasSavedAssessment, loadAssessment, loadSessionSnapshot, parseImportedSession, saveSession, clearAssessment } from "@/lib/storage";
 import { questions } from "@/lib/questions";
 import type { AIInterviewResult } from "@/lib/ai-interview";
-import type { Assessment, AssessmentQuestion } from "@/types/assessment";
+import type { Assessment, AssessmentQuestion, CapturedFact } from "@/types/assessment";
 import type { InterviewMessage } from "@/types/session";
 import { ReadinessPanel } from "./ReadinessPanel";
 import { OpportunityTable } from "./OpportunityTable";
 
-type AIResponse = AIInterviewResult & { updated_assessment: Assessment };
+type AIResponse = AIInterviewResult & { updated_assessment: Assessment; captured_facts?: CapturedFact[] };
 const answerFor = (assessment: Assessment, question: AssessmentQuestion | null) => question ? assessment.answers.find((item) => item.question_id === question.id)?.answer ?? "" : "";
 const message = (role: InterviewMessage["role"], text: string): InterviewMessage => ({role,text,timestamp:new Date().toISOString()});
 const openingMessages = (question: AssessmentQuestion | null): InterviewMessage[] => [message("assistant",question?.title ?? "Your assessment has enough coverage to review the roadmap.")];
+const factValue = (fact: CapturedFact) => typeof fact.value === "object" ? `${fact.value.min}–${fact.value.max}` : String(fact.value);
 
 export function InterviewApp() {
   const [assessment, setAssessment] = useState<Assessment>(initialAssessment);
@@ -31,6 +32,7 @@ export function InterviewApp() {
   const [loaded, setLoaded] = useState(false);
   const [showResumeNotice, setShowResumeNotice] = useState(false);
   const [sessionStatus, setSessionStatus] = useState("");
+  const [capturedFactsThisTurn, setCapturedFactsThisTurn] = useState<CapturedFact[]>([]);
   const importInput = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -44,17 +46,17 @@ export function InterviewApp() {
   useEffect(() => { if (loaded) saveSession(assessment,messages,question?.id ?? null); }, [assessment,messages,question,loaded]);
 
   const selectNext = (state: Assessment, excluded = skipped) => { const next = chooseNextQuestion(state, excluded) ?? chooseNextQuestion(state); setQuestion(next); setAnswer(answerFor(state, next)); return next; };
-  const reset = () => { if (!window.confirm("Start a new assessment? Your current browser session will be cleared. Export it first if you may need it later.")) return; const empty=createEmptyAssessment(); clearAssessment(); setAssessment(empty); setSkipped([]); setUpdatedFields([]); setAiAnswer(""); const next=selectNext(empty,[]); setMessages(openingMessages(next)); setShowResumeNotice(false); setSessionStatus("New assessment started."); };
-  const loadSeed = () => { if (!window.confirm("Load the Iona sample? This replaces the current browser session. Export your current session first if needed.")) return; const sample=createIonaAssessment(); setAssessment(sample); setSkipped([]); setUpdatedFields([]); setAiAnswer(""); const next=selectNext(sample,[]); setMessages(openingMessages(next)); setShowResumeNotice(false); setSessionStatus("Iona sample loaded."); };
+  const reset = () => { if (!window.confirm("Start a new assessment? Your current browser session will be cleared. Export it first if you may need it later.")) return; const empty=createEmptyAssessment(); clearAssessment(); setAssessment(empty); setSkipped([]); setUpdatedFields([]); setCapturedFactsThisTurn([]); setAiAnswer(""); const next=selectNext(empty,[]); setMessages(openingMessages(next)); setShowResumeNotice(false); setSessionStatus("New assessment started."); };
+  const loadSeed = () => { if (!window.confirm("Load the Iona sample? This replaces the current browser session. Export your current session first if needed.")) return; const sample=createIonaAssessment(); setAssessment(sample); setSkipped([]); setUpdatedFields([]); setCapturedFactsThisTurn([]); setAiAnswer(""); const next=selectNext(sample,[]); setMessages(openingMessages(next)); setShowResumeNotice(false); setSessionStatus("Iona sample loaded."); };
   const saveCurrentSession = () => { saveSession(assessment,messages,question?.id ?? null); setSessionStatus(`Session saved at ${new Date().toLocaleTimeString()}.`); };
   const exportCurrentSession = () => { const snapshot=saveSession(assessment,messages,question?.id ?? null); exportSessionFile(snapshot); setSessionStatus("Session JSON exported."); };
   const importSession = async (file: File | undefined) => {
     if (!file) return;
-    try { const snapshot=parseImportedSession(await file.text()); if (!window.confirm(`Import the saved session for ${snapshot.assessment.company_profile.company_name || "this assessment"}? This will replace the current browser session.`)) return; const restoredQuestion=snapshot.current_question_id ? questions.find((item)=>item.id===snapshot.current_question_id) ?? chooseNextQuestion(snapshot.assessment) : chooseNextQuestion(snapshot.assessment); setAssessment(snapshot.assessment); setMessages(snapshot.interview_history.length ? snapshot.interview_history : openingMessages(restoredQuestion)); setQuestion(restoredQuestion); setAnswer(answerFor(snapshot.assessment,restoredQuestion)); setSkipped([]); setUpdatedFields([]); setAiAnswer(""); saveSession(snapshot.assessment,snapshot.interview_history,restoredQuestion?.id ?? null); setShowResumeNotice(false); setSessionStatus("Session imported. Continue the interview where you left off."); }
+    try { const snapshot=parseImportedSession(await file.text()); if (!window.confirm(`Import the saved session for ${snapshot.assessment.company_profile.company_name || "this assessment"}? This will replace the current browser session.`)) return; const restoredQuestion=snapshot.current_question_id ? questions.find((item)=>item.id===snapshot.current_question_id) ?? chooseNextQuestion(snapshot.assessment) : chooseNextQuestion(snapshot.assessment); setAssessment(snapshot.assessment); setMessages(snapshot.interview_history.length ? snapshot.interview_history : openingMessages(restoredQuestion)); setQuestion(restoredQuestion); setAnswer(answerFor(snapshot.assessment,restoredQuestion)); setSkipped([]); setUpdatedFields([]); setCapturedFactsThisTurn([]); setAiAnswer(""); saveSession(snapshot.assessment,snapshot.interview_history,restoredQuestion?.id ?? null); setShowResumeNotice(false); setSessionStatus("Session imported. Continue the interview where you left off."); }
     catch (error) { setSessionStatus(error instanceof Error ? error.message : "Unable to import that session file."); }
     finally { if (importInput.current) importInput.current.value=""; }
   };
-  const saveAndContinue = () => { if (!question || !answer.trim()) return; const updated = applyAnswer(assessment, question, answer); setAssessment(updated); setSkipped([]); setUpdatedFields([question.field]); selectNext(updated, []); };
+  const saveAndContinue = () => { if (!question || !answer.trim()) return; const existingIds=new Set((assessment.capturedFacts ?? []).map((fact)=>fact.id)); const updated=applyAnswer(assessment,question,answer); setAssessment(updated); setCapturedFactsThisTurn(updated.capturedFacts.filter((fact)=>!existingIds.has(fact.id))); setSkipped([]); setUpdatedFields([question.field]); selectNext(updated,[]); };
   const skip = () => { if (!question) return; const excluded = [...skipped, question.id]; setSkipped(excluded); selectNext(assessment, excluded); };
   const sendAIAnswer = async () => {
     const responseText = aiAnswer.trim(); if (!responseText || !question || aiStatus === "thinking") return;
@@ -65,11 +67,11 @@ export function InterviewApp() {
       if (!response.ok) throw new Error("AI unavailable");
       const result = await response.json() as AIResponse;
       if (!result.updated_assessment || typeof result.assistant_question !== "string" || !Array.isArray(result.fields_targeted)) throw new Error("Invalid AI response");
-      setAssessment(result.updated_assessment); setUpdatedFields(result.fields_targeted); setSkipped([]); selectNext(result.updated_assessment, []);
+      setAssessment(result.updated_assessment); setUpdatedFields(result.fields_targeted); setCapturedFactsThisTurn(result.captured_facts ?? result.updated_assessment.capturedFacts.filter((fact)=>!(assessment.capturedFacts ?? []).some((existing)=>existing.id===fact.id))); setSkipped([]); selectNext(result.updated_assessment, []);
       setMessages((current) => [...current, message("assistant",result.assistant_question)]); setAiStatus("idle");
     } catch {
       const updated = applyAnswer(assessment, question, responseText); const next = chooseNextQuestion(updated);
-      setAssessment(updated); setQuestion(next); setUpdatedFields([question.field]); setSkipped([]);
+      setAssessment(updated); setQuestion(next); setUpdatedFields([question.field]); setCapturedFactsThisTurn(updated.capturedFacts.filter((fact)=>!(assessment.capturedFacts ?? []).some((existing)=>existing.id===fact.id))); setSkipped([]);
       setMessages((current) => [...current, message("assistant",next?.title ?? "Assessment coverage is complete. You can review the roadmap.")]); setAiStatus("fallback");
     }
   };
@@ -97,6 +99,7 @@ export function InterviewApp() {
           <textarea value={answer} onChange={(event) => setAnswer(event.target.value)} placeholder="Enter one item per line. Use | between fields where shown." />
           <div className="actions"><button onClick={saveAndContinue} disabled={!answer.trim()}>Save & choose next</button><button className="secondary" onClick={skip}>Skip for now</button><Link className="button-link" href="/report">Preview report</Link></div>
         </> : <><span className="step">Assessment coverage complete</span><h2>Ready to review the roadmap</h2><p className="help">All required report sections have enough structured information for this MVP.</p><Link className="button-link" href="/report">Open report preview</Link></>}
+        {capturedFactsThisTurn.length > 0 && <div className="captured-facts"><strong>Captured facts from your answer</strong><div>{capturedFactsThisTurn.map((fact)=><article key={fact.id}><b>{fact.label}</b><span>{factValue(fact)} {fact.unit}</span><small>{fact.timePeriod} · {fact.businessArea} · {fact.confidence}{fact.workflowId ? ` · ${fact.workflowId}` : ""}</small></article>)}</div></div>}
       </section>
       <ReadinessPanel assessment={assessment} />
       <OpportunityTable opportunities={assessment.opportunities} />

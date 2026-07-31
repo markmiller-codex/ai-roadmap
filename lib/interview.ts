@@ -1,6 +1,7 @@
 import type { Assessment, AssessmentQuestion, DataAsset, OperatingMetric, PainPoint, RoleGroup, Score, TechnologySystem, Workflow } from "@/types/assessment";
 import { questions } from "./questions";
 import { buildRoadmapPhases, opportunityFromWorkflow } from "./scoring";
+import { applyFactsToStructuredState, clarifyCapturedFact, extractCapturedFacts, factSatisfiesField, mergeCapturedFacts } from "./evidence";
 
 const lines = (text: string) => text.split(/\n|;/).map((line) => line.trim()).filter(Boolean);
 const columns = (line: string) => line.split(/\||—/).map((item) => item.trim());
@@ -11,9 +12,11 @@ const inferFunction = (text: string) => /hire|applicant|employee|onboard/i.test(
 const inferScore = (text: string, terms: string[], base: Score = 2) => score(String(Number(base) + terms.filter((term) => text.toLowerCase().includes(term)).length));
 
 export function chooseNextQuestion(assessment: Assessment, excludedIds: string[] = []): AssessmentQuestion | null {
-  return questions.filter((question) => !excludedIds.includes(question.id) && !question.isComplete(assessment)).sort((a, b) => b.priority - a.priority)[0] ?? null;
+  const unclear=(assessment.capturedFacts ?? []).find((fact)=>fact.needsClarification && !excludedIds.includes(`clarify_fact_${fact.id}`));
+  if (unclear) return { id:`clarify_fact_${unclear.id}`, module:"operating_metrics", field:"capturedFacts", title:`You provided ${typeof unclear.value === "object" ? `${unclear.value.min}–${unclear.value.max}` : unclear.value} ${unclear.unit}, but I need its label. What does this value measure, for which business area or workflow, and for what time period?`, help:`Original answer: ${unclear.createdFromUserAnswer}`, priority:1000, isComplete:()=>false };
+  return questions.filter((question) => !excludedIds.includes(question.id) && !question.isComplete(assessment) && !assessment.answers.some((answer)=>answer.question_id===question.id) && !factSatisfiesField(assessment,question.field)).sort((a, b) => b.priority - a.priority)[0] ?? null;
 }
-export function getMissingData(assessment: Assessment) { return questions.filter((question) => !question.isComplete(assessment)).map((question) => ({ questionId: question.id, module: question.module, field: question.field, label: question.title })); }
+export function getMissingData(assessment: Assessment) { const clarification=chooseNextQuestion(assessment); const clarifying=clarification?.id.startsWith("clarify_fact_") ? [{questionId:clarification.id,module:clarification.module,field:clarification.field,label:clarification.title}] : []; return [...clarifying,...questions.filter((question) => !question.isComplete(assessment) && !assessment.answers.some((answer)=>answer.question_id===question.id) && !factSatisfiesField(assessment,question.field)).map((question) => ({ questionId: question.id, module: question.module, field: question.field, label: question.title }))]; }
 
 function parseCompanyFacts(state: Assessment, answer: string) {
   for (const line of lines(answer)) {
@@ -38,8 +41,10 @@ function painPoints(workflows: Workflow[]): PainPoint[] { return workflows.map((
 
 export function applyAnswer(current: Assessment, question: AssessmentQuestion, answer: string): Assessment {
   const state = structuredClone(current); const id = question.id;
+  const newFacts=extractCapturedFacts(answer,state); state.capturedFacts=mergeCapturedFacts(state.capturedFacts ?? [],newFacts); applyFactsToStructuredState(state,newFacts);
   state.answers = state.answers.filter((item) => item.question_id !== id);
   state.answers.push({ question_id: id, module: question.module, field: question.field, answer, saved_at: new Date().toISOString() });
+  if (id.startsWith("clarify_fact_")) clarifyCapturedFact(state,id.slice("clarify_fact_".length),answer);
   if (id === "company_orientation") { state.company_profile.operating_model = answer; const employee = answer.match(/(\d+)\s+(employees|staff|people)/i); const location = answer.match(/(\d+)\s+(locations|restaurants|stores|offices)/i); if (employee) state.company_profile.employee_count = Number(employee[1]); if (location) state.company_profile.locations = Number(location[1]); if (/restaurant|hospitality/i.test(answer)) state.company_profile.industry = "Restaurant / Hospitality"; }
   if (id === "company_facts") parseCompanyFacts(state, answer);
   if (id === "customers_revenue") { const customerLine = lines(answer).filter((l) => /customer|client|guest/i.test(l)); const revenueLine = lines(answer).filter((l) => !/customer|client|guest/i.test(l)); state.company_profile.customer_types = customerLine.length ? customerLine.map((l) => valueAfter(l) || l) : lines(answer).slice(0, Math.ceil(lines(answer).length / 2)); state.company_profile.revenue_sources = revenueLine.length ? revenueLine.map((l) => valueAfter(l) || l) : lines(answer).slice(Math.ceil(lines(answer).length / 2)); }

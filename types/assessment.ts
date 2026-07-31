@@ -2,6 +2,9 @@ export type Score = 1 | 2 | 3 | 4 | 5;
 export type ExportCapability = "none" | "manual" | "csv" | "api" | "unknown";
 export type IntegrationCapability = "none" | "limited" | "good" | "strong" | "unknown";
 export type OpportunityClassification = "Quick Win" | "Near-Term Project" | "Foundation Project" | "Future Opportunity";
+export type FactConfidence = "exact" | "estimate" | "range" | "unknown_verifiable";
+export type FactValue = string | number | { min: number; max: number };
+export interface CapturedFact { id: string; label: string; value: FactValue; unit: string; timePeriod: string; businessArea: string; workflowId?: string; confidence: FactConfidence; verificationSources: string[]; relatedFields: string[]; createdFromUserAnswer: string; createdAt: string; needsClarification?: boolean; }
 
 export interface CompanyProfile {
   company_name: string; industry: string; subindustry: string; locations: number | null;
@@ -24,6 +27,6 @@ export interface Opportunity { opportunity_name: string; related_workflow: strin
 export interface RoadmapPhase { phase_name: string; timeframe: string; objectives: string[]; opportunity_names: string[]; dependencies: string[]; success_measures: string[]; }
 export interface Answer { question_id: string; module: QuestionModuleId; field: string; answer: string; saved_at: string; }
 export type QuestionModuleId = "company_profile" | "operating_metrics" | "business_functions" | "people_roles" | "workflows" | "workflow_detail" | "technology_stack" | "data_readiness" | "current_ai_use" | "pain_points" | "baseline_metrics" | "strategic_priorities" | "governance_risk" | "implementation_capacity" | "success_metrics";
-export interface Assessment { id: string; created_at: string; updated_at: string; company_profile: CompanyProfile; operating_metrics: OperatingMetric[]; business_functions: BusinessFunction[]; role_groups: RoleGroup[]; workflows: Workflow[]; technology_stack: TechnologySystem[]; data_assets: DataAsset[]; document_assets: DocumentAsset[]; pain_points: PainPoint[]; ai_readiness: AIReadiness; governance_profile: GovernanceProfile; management_decisions: string[]; opportunities: Opportunity[]; roadmap_phases: RoadmapPhase[]; answers: Answer[]; }
+export interface Assessment { id: string; created_at: string; updated_at: string; company_profile: CompanyProfile; capturedFacts: CapturedFact[]; operating_metrics: OperatingMetric[]; business_functions: BusinessFunction[]; role_groups: RoleGroup[]; workflows: Workflow[]; technology_stack: TechnologySystem[]; data_assets: DataAsset[]; document_assets: DocumentAsset[]; pain_points: PainPoint[]; ai_readiness: AIReadiness; governance_profile: GovernanceProfile; management_decisions: string[]; opportunities: Opportunity[]; roadmap_phases: RoadmapPhase[]; answers: Answer[]; }
 export interface AssessmentQuestion { id: string; module: QuestionModuleId; field: string; title: string; help: string; priority: number; isComplete: (assessment: Assessment) => boolean; }
 export interface ReadinessSection { key: string; label: string; weight: number; complete: boolean; missing: string[]; }

@@ -4,6 +4,28 @@
   "type": "object",
   "required": ["company_profile", "operating_metrics", "business_functions", "role_groups", "workflows", "technology_stack", "data_assets", "document_assets", "pain_points", "ai_readiness", "governance_profile", "management_decisions", "opportunities", "roadmap_phases"],
   "properties": {
+    "capturedFacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "label", "value", "unit", "timePeriod", "businessArea", "confidence", "verificationSources", "relatedFields", "createdFromUserAnswer", "createdAt"],
+        "properties": {
+          "id": { "type": "string" },
+          "label": { "type": "string" },
+          "value": { "oneOf": [{ "type": "string" }, { "type": "number" }, { "type": "object", "required": ["min", "max"], "properties": { "min": { "type": "number" }, "max": { "type": "number" } } }] },
+          "unit": { "type": "string" },
+          "timePeriod": { "type": "string" },
+          "businessArea": { "type": "string" },
+          "workflowId": { "type": "string" },
+          "confidence": { "type": "string", "enum": ["exact", "estimate", "range", "unknown_verifiable"] },
+          "verificationSources": { "type": "array", "items": { "type": "string" } },
+          "relatedFields": { "type": "array", "items": { "type": "string" } },
+          "createdFromUserAnswer": { "type": "string" },
+          "createdAt": { "type": "string" },
+          "needsClarification": { "type": "boolean" }
+        }
+      }
+    },
     "company_profile": { "type": "object", "required": ["company_name", "industry", "employee_count", "locations", "management_structure", "customer_types", "revenue_sources", "strategic_priorities"] },
     "operating_metrics": { "type": "array", "items": { "$ref": "#/$defs/operating_metric" } },
     "business_functions": { "type": "array", "items": { "type": "object", "required": ["function_name", "employee_count", "manager_owner", "importance", "pain_level", "systems_used"] } },

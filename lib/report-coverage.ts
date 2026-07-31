@@ -1,4 +1,5 @@
 import type { Assessment, ReadinessSection } from "@/types/assessment";
+import { factSatisfiesField, factSatisfiesWorkflowField } from "./evidence";
 
 const complete = (key: string, label: string, condition: boolean, missing: string[]): ReadinessSection => ({ key, label, weight: 1 / 19, complete: condition, missing: condition ? [] : missing });
 const detailedWorkflows = (a: Assessment) => a.workflows.filter((w) => Boolean(w.owner && w.monthly_volume && w.time_per_instance_minutes && w.systems_used.length && w.data_sources?.length && w.bottlenecks.length));
@@ -9,8 +10,8 @@ export function getReportCoverage(a: Assessment): ReadinessSection[] {
   const phase3 = a.opportunities.filter((o) => o.recommended_phase === "Phase 3");
   return [
     complete("executive_summary", "Executive summary", Boolean(a.company_profile.company_name && a.company_profile.industry && a.opportunities.length >= 10), ["company facts and 10-opportunity portfolio"]),
-    complete("business_profile", "Business profile", Boolean(a.company_profile.employee_count && a.company_profile.annual_revenue && a.company_profile.management_structure && a.company_profile.customer_types.length >= 3 && a.company_profile.revenue_sources.length >= 3), ["revenue, management structure, customer segments, and revenue sources"]),
-    complete("operating_snapshot", "Operating snapshot", a.operating_metrics.length >= 10 && a.role_groups.length >= 4, ["at least 10 operating metrics and 4 role groups"]),
+    complete("business_profile", "Business profile", Boolean(a.company_profile.employee_count && (a.company_profile.annual_revenue || factSatisfiesField(a,"company_profile.annual_revenue")) && a.company_profile.management_structure && a.company_profile.customer_types.length >= 3 && a.company_profile.revenue_sources.length >= 3), ["revenue, management structure, customer segments, and revenue sources"]),
+    complete("operating_snapshot", "Operating snapshot", a.operating_metrics.length + (a.capturedFacts ?? []).filter((fact)=>!fact.needsClarification && fact.relatedFields.includes("operating_metrics")).length >= 10 && a.role_groups.length >= 4, ["at least 10 labeled operating facts/metrics and 4 role groups"]),
     complete("current_state", "Current-state AI and technology assessment", a.technology_stack.length >= 5 && Boolean(a.ai_readiness.current_ai_use), ["at least 5 systems and current AI-use detail"]),
     complete("ai_readiness", "AI readiness score", [a.ai_readiness.leadership_support,a.ai_readiness.employee_readiness,a.ai_readiness.data_availability,a.ai_readiness.data_organization,a.ai_readiness.process_documentation,a.ai_readiness.governance_maturity,a.ai_readiness.implementation_capacity].every(Boolean), ["all seven AI-readiness dimensions"]),
     complete("strategic_goals", "Strategic AI goals", a.company_profile.strategic_priorities.length >= 5, ["at least 5 strategic priorities"]),
@@ -33,11 +34,11 @@ export function getReportCoverage(a: Assessment): ReadinessSection[] {
 export function getSpecificAssessmentGaps(a: Assessment) {
   const gaps = getReportCoverage(a).flatMap((section) => section.missing.map((missing) => `${section.label}: ${missing}`));
   for (const workflow of a.workflows) {
-    if (!workflow.monthly_volume) gaps.push(`Missing workflow volume for ${workflow.workflow_name}`);
+    if (!workflow.monthly_volume && !factSatisfiesWorkflowField(a,workflow.workflow_name,"monthly_volume")) gaps.push(`Missing workflow volume for ${workflow.workflow_name}`);
     if (!workflow.owner) gaps.push(`Missing owner for ${workflow.workflow_name}`);
     if (!workflow.systems_used.length) gaps.push(`Missing systems used by ${workflow.workflow_name}`);
     if (!workflow.data_sources?.length) gaps.push(`Missing data sources for ${workflow.workflow_name}`);
-    if (!workflow.baseline_metrics?.length) gaps.push(`Missing baseline metrics for ${workflow.workflow_name}`);
+    if (!workflow.baseline_metrics?.length && !factSatisfiesWorkflowField(a,workflow.workflow_name,"baseline_metrics")) gaps.push(`Missing baseline metrics for ${workflow.workflow_name}`);
     if (!workflow.target_metrics?.length) gaps.push(`Missing target metrics for ${workflow.workflow_name}`);
     if (!workflow.implementation_dependencies?.length) gaps.push(`Missing implementation dependencies for ${workflow.workflow_name}`);
   }

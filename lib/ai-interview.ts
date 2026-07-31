@@ -1,5 +1,6 @@
-import type { Assessment, MetricTarget, QuestionModuleId, Score } from "@/types/assessment";
+import type { Assessment, CapturedFact, FactConfidence, FactValue, MetricTarget, QuestionModuleId, Score } from "@/types/assessment";
 import { buildRoadmapPhases, opportunityFromWorkflow } from "./scoring";
+import { applyFactsToStructuredState, mergeCapturedFacts } from "./evidence";
 
 export interface ProposedStateUpdate { path: string; value: unknown; }
 export interface AIInterviewResult {
@@ -80,9 +81,21 @@ function cleanRecords(value: unknown, rules: Record<string, Kind>) {
   });
 }
 
+function cleanFactValue(value: unknown): FactValue | undefined {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "string" && value.trim()) return value.trim().slice(0,500);
+  if (value && typeof value === "object" && !Array.isArray(value)) { const range=value as Record<string,unknown>; if (typeof range.min === "number" && Number.isFinite(range.min) && typeof range.max === "number" && Number.isFinite(range.max)) return {min:range.min,max:range.max}; }
+}
+function cleanFacts(value: unknown): CapturedFact[] | undefined {
+  value=decoded(value,"records"); if (!Array.isArray(value)) return;
+  const confidenceValues:FactConfidence[]=["exact","estimate","range","unknown_verifiable"];
+  return value.slice(0,50).flatMap((item):CapturedFact[]=>{ if (!item || typeof item!=="object" || Array.isArray(item)) return []; const source=item as Record<string,unknown>; const factValue=cleanFactValue(source.value), label=cleanString(source.label), unit=cleanString(source.unit), timePeriod=cleanString(source.timePeriod), businessArea=cleanString(source.businessArea), createdFromUserAnswer=cleanString(source.createdFromUserAnswer); const confidence=confidenceValues.includes(source.confidence as FactConfidence) ? source.confidence as FactConfidence : undefined; const verificationSources=clean(source.verificationSources,"string-array"), relatedFields=clean(source.relatedFields,"string-array"), workflowId=source.workflowId === undefined || source.workflowId === null ? undefined : cleanString(source.workflowId); if (factValue===undefined || !label || !unit || !timePeriod || !businessArea || !confidence || !Array.isArray(verificationSources) || !Array.isArray(relatedFields) || !createdFromUserAnswer) return []; return [{id:cleanString(source.id) || `fact-${Date.now()}-${Math.random().toString(36).slice(2,8)}`,label,value:factValue,unit,timePeriod,businessArea,workflowId,confidence,verificationSources:verificationSources as string[],relatedFields:relatedFields as string[],createdFromUserAnswer,createdAt:new Date().toISOString(),needsClarification:confidence==="unknown_verifiable" || label.toLowerCase().startsWith("unlabeled")}]; });
+}
+
 export function applyAIUpdates(current: Assessment, updates: ProposedStateUpdate[]) {
-  const state = structuredClone(current); const applied: string[] = [];
+  const state = structuredClone(current); state.capturedFacts=state.capturedFacts ?? []; const applied: string[] = [];
   for (const update of updates.slice(0, 30)) {
+    if (update.path === "captured_facts") { const facts=cleanFacts(update.value); if (facts) { state.capturedFacts=mergeCapturedFacts(state.capturedFacts ?? [],facts); applyFactsToStructuredState(state,facts); applied.push(update.path); } continue; }
     const leafKind = leafRules[update.path];
     if (leafKind) {
       const value = clean(update.value, leafKind);

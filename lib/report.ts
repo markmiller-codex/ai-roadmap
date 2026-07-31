@@ -9,6 +9,7 @@ const average = (values:Array<number|null>) => { const available=values.filter((
 const metricRows = (a:Assessment) => a.operating_metrics.map((m)=>`| ${m.metric_name} | ${m.value.toLocaleString()} ${m.unit} | ${m.period} | ${m.source} |`).join("\n") || "| — | Not captured | — | — |";
 const opportunityRows = (items:Opportunity[]) => items.map((o,i)=>`| ${i+1} | ${o.opportunity_name} | ${o.owner || "Not captured"} | ${o.total_score} | ${o.classification} | ${o.recommended_phase} | ${o.time_to_pilot} |`).join("\n") || "| — | No opportunities scored | — | — | — | — | — |";
 const targetRows = (opportunity:Opportunity) => (opportunity.target_metrics ?? []).map((m)=>`| ${m.metric_name} | ${m.baseline} | ${m.target} | ${m.measurement_period} | ${m.source} |`).join("\n") || "| Metric not captured | — | — | — | — |";
+const evidenceValue = (value: Assessment["capturedFacts"][number]["value"]) => typeof value === "object" ? `${value.min}–${value.max}` : String(value);
 
 function projectProfile(o:Opportunity,index:number) {
   return `### ${index+1}. ${o.opportunity_name}
@@ -66,6 +67,12 @@ ${c.company_name || "The company"} is a ${c.locations ?? "location count not cap
 ${metricRows(state)}
 
 Employee and role breakdown: ${state.role_groups.map((role)=>`${role.role_name}: ${role.headcount ?? "?"}`).join("; ") || "Not captured"}.
+
+### Captured evidence ledger
+
+| Fact | Value | Unit | Period | Business area | Workflow | Confidence |
+|---|---:|---|---|---|---|---|
+${(state.capturedFacts ?? []).map((fact)=>`| ${fact.label} | ${evidenceValue(fact.value)} | ${fact.unit} | ${fact.timePeriod} | ${fact.businessArea} | ${fact.workflowId || "—"} | ${fact.confidence} |`).join("\n") || "| — | — | — | — | — | — | No facts captured |"}
 
 ## 4. Current-state AI and technology assessment
 
