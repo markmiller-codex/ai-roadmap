@@ -32,13 +32,15 @@ ${targetRows(o)}`;
 
 export function generateReport(state:Assessment) {
   const c=state.company_profile, readiness=calculateReadiness(state), top=state.opportunities.slice(0,5), aiScore=average([state.ai_readiness.leadership_support,state.ai_readiness.employee_readiness,state.ai_readiness.data_availability,state.ai_readiness.data_organization,state.ai_readiness.process_documentation,state.ai_readiness.governance_maturity,state.ai_readiness.implementation_capacity]);
-  const totalHours=state.workflows.reduce((sum,w)=>sum+(w.weekly_time_cost_hours??0),0); const phase2=state.opportunities.filter((o)=>o.recommended_phase==="Phase 2"), phase3=state.opportunities.filter((o)=>o.recommended_phase==="Phase 3"); const gaps=getSpecificAssessmentGaps(state); const completedSections=readiness.sections.filter((section)=>section.complete); const nextQuestions=getMissingData(state).slice(0,8);
+  const totalHours=state.workflows.reduce((sum,w)=>sum+(w.weekly_time_cost_hours??0),0); const phase2=state.opportunities.filter((o)=>o.recommended_phase==="Phase 2"), phase3=state.opportunities.filter((o)=>o.recommended_phase==="Phase 3"); const gaps=getSpecificAssessmentGaps(state); const completedSections=readiness.sections.filter((section)=>section.complete); const nextQuestions=getMissingData(state).slice(0,8); const issues=state.discoveryIssues??[]; const materialIssues=issues.filter((issue)=>!["verified","resolved"].includes(issue.status)); const hasBenchmarks=state.capturedFacts.some((fact)=>fact.sourceType==="industry_benchmark")||issues.some((issue)=>issue.issueType==="benchmark_assumption"); const reportStatus=readiness.percent>=90&&!materialIssues.length?"Implementation-Ready Roadmap":hasBenchmarks?"Benchmark-Supported Draft":"Discovery Draft";
   return `# AI Opportunity Roadmap Report
 
 ## ${c.company_name || "Company assessment"}
 
 **Industry:** ${c.industry || "Not captured"}  
 **Target-report readiness:** ${readiness.percent}%
+
+**Report status:** ${reportStatus}
 
 **AI readiness:** ${aiScore}/5
 **Opportunity portfolio:** ${state.opportunities.length} scored opportunities
@@ -59,6 +61,16 @@ ${c.company_name || "The company"} is a ${c.locations ?? "location count not cap
 | Customer segments | ${list(c.customer_types)} |
 | Revenue sources | ${list(c.revenue_sources)} |
 | Operating model | ${c.operating_model || "Not captured"} |
+
+## Data Quality and Assumptions
+
+This report is classified as **${reportStatus}**. Confirmed company evidence is used confidently; estimates and industry benchmarks are treated as provisional. Excluded variables are not treated as scoring evidence. Recommendations that materially depend on benchmark assumptions are promising but need validation.
+
+- User estimates: ${state.capturedFacts.filter((fact)=>fact.sourceType==="user_estimate").length}
+- Industry benchmark assumptions: ${state.capturedFacts.filter((fact)=>fact.sourceType==="industry_benchmark").length}
+- Unknown or verification-needed items: ${issues.filter((issue)=>issue.status==="open").length}
+- Excluded variables: ${issues.filter((issue)=>issue.status==="excluded").length}
+- Unresolved conflicts: ${issues.filter((issue)=>issue.issueType==="conflicting_information"&&issue.status!=="resolved").length}
 
 ## 3. Operating snapshot
 

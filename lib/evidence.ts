@@ -76,5 +76,6 @@ export function factQuality(fact: CapturedFact) {
   if (fact.sourceType === "user_estimate") return 0.65;
   if (fact.sourceType === "system_inferred") return 0.5;
   if (fact.sourceType === "industry_benchmark") return 0.3;
+  if (fact.sourceType === "excluded_by_user") return 0;
   return 0.1;
 }

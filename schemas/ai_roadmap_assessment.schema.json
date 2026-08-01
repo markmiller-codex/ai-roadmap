@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "AI Roadmap Assessment",
   "type": "object",
-  "required": ["company_profile", "operating_metrics", "business_functions", "role_groups", "workflows", "technology_stack", "data_assets", "document_assets", "pain_points", "ai_readiness", "governance_profile", "management_decisions", "opportunities", "roadmap_phases"],
+  "required": ["company_profile", "capturedFacts", "discoveryIssues", "operating_metrics", "business_functions", "role_groups", "workflows", "technology_stack", "data_assets", "document_assets", "pain_points", "ai_readiness", "governance_profile", "management_decisions", "opportunities", "roadmap_phases"],
   "properties": {
     "capturedFacts": {
       "type": "array",
@@ -17,9 +17,9 @@
           "timePeriod": { "type": "string" },
           "businessArea": { "type": "string" },
           "workflowId": { "type": "string" },
-          "sourceType": { "type": "string", "enum": ["user_confirmed", "user_estimate", "website", "industry_benchmark", "system_inferred", "unknown_verifiable"] },
+          "sourceType": { "type": "string", "enum": ["user_confirmed", "user_estimate", "website", "industry_benchmark", "system_inferred", "unknown_verifiable", "excluded_by_user"] },
           "sourceUrl": { "type": "string" },
-          "confidence": { "type": "string", "enum": ["exact", "estimate", "range", "benchmark_assumption", "inferred", "unknown"] },
+          "confidence": { "type": "string", "enum": ["exact", "estimate", "range", "benchmark_assumption", "inferred", "unknown", "excluded"] },
           "verificationSources": { "type": "array", "items": { "type": "string" } },
           "relatedFields": { "type": "array", "items": { "type": "string" } },
           "createdFromUserAnswer": { "type": "string" },
@@ -30,6 +30,7 @@
         }
       }
     },
+    "discoveryIssues": { "type": "array", "items": { "type": "object", "required": ["id", "issueType", "label", "description", "businessArea", "relatedReportSection", "requestedValue", "sourceType", "confidence", "verificationSources", "recommendedNextAction", "effectOnReadiness", "effectOnScoring", "notes", "status", "createdAt", "updatedAt"], "properties": { "id": {"type":"string"}, "issueType": {"type":"string","enum":["missing_information","user_estimate","benchmark_assumption","conflicting_information","needs_verification","excluded_variable"]}, "label":{"type":"string"}, "description":{"type":"string"}, "businessArea":{"type":"string"}, "workflowId":{"type":"string"}, "relatedReportSection":{"type":"string"}, "requestedValue":{"type":"string"}, "currentValue":{}, "unit":{"type":"string"}, "timePeriod":{"type":"string"}, "sourceType":{"type":"string"}, "confidence":{"type":"string"}, "verificationSources":{"type":"array","items":{"type":"string"}}, "recommendedNextAction":{"type":"string"}, "effectOnReadiness":{"type":"string"}, "effectOnScoring":{"type":"string"}, "notes":{"type":"string"}, "status":{"type":"string","enum":["open","accepted_for_draft","verified","excluded","resolved"]}, "createdAt":{"type":"string"}, "updatedAt":{"type":"string"} } } },
     "company_profile": { "type": "object", "required": ["company_name", "website_url", "industry", "employee_count", "locations", "management_structure", "customer_types", "revenue_sources", "strategic_priorities"] },
     "operating_metrics": { "type": "array", "items": { "$ref": "#/$defs/operating_metric" } },
     "business_functions": { "type": "array", "items": { "type": "object", "required": ["function_name", "employee_count", "manager_owner", "importance", "pain_level", "systems_used"] } },

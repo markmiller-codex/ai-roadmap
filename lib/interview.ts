@@ -3,6 +3,7 @@ import { questions } from "./questions";
 import { buildRoadmapPhases, opportunityFromWorkflow } from "./scoring";
 import { applyFactsToStructuredState, clarifyCapturedFact, extractCapturedFacts, factSatisfiesField, mergeCapturedFacts } from "./evidence";
 import { confirmWebsiteFacts } from "./website-apply";
+import { createDiscoveryIssue, detectsUncertainty, inferUncertaintyChoice, resolveDiscoveryIssue, uncertaintyPrompt } from "./discovery-issues";
 
 const lines = (text: string) => text.split(/\n|;/).map((line) => line.trim()).filter(Boolean);
 const columns = (line: string) => line.split(/\||—/).map((item) => item.trim());
@@ -13,6 +14,8 @@ const inferFunction = (text: string) => /hire|applicant|employee|onboard/i.test(
 const inferScore = (text: string, terms: string[], base: Score = 2) => score(String(Number(base) + terms.filter((term) => text.toLowerCase().includes(term)).length));
 
 export function chooseNextQuestion(assessment: Assessment, excludedIds: string[] = []): AssessmentQuestion | null {
+  const pending=(assessment.discoveryIssues??[]).find((issue)=>["missing_information","user_estimate"].includes(issue.issueType)&&issue.status==="open"&&!excludedIds.includes(`resolve_issue_${issue.id}`));
+  if(pending)return {id:`resolve_issue_${pending.id}`,module:"operating_metrics",field:"discoveryIssues",title:uncertaintyPrompt(pending),help:"Choose benchmark, enter an estimate, mark unknown/verifiable, or exclude it. You can revisit the choice later.",priority:1100,isComplete:()=>false};
   const unclear=(assessment.capturedFacts ?? []).find((fact)=>fact.needsClarification && !excludedIds.includes(`clarify_fact_${fact.id}`));
   if (unclear) return { id:`clarify_fact_${unclear.id}`, module:"operating_metrics", field:"capturedFacts", title:`You provided ${typeof unclear.value === "object" ? `${unclear.value.min}–${unclear.value.max}` : unclear.value} ${unclear.unit}, but I need its label. What does this value measure, for which business area or workflow, and for what time period?`, help:`Original answer: ${unclear.createdFromUserAnswer}`, priority:1000, isComplete:()=>false };
   const websiteFacts=(assessment.capturedFacts ?? []).filter((fact)=>fact.sourceType==="website"&&fact.needsConfirmation);
@@ -44,6 +47,9 @@ function painPoints(workflows: Workflow[]): PainPoint[] { return workflows.map((
 
 export function applyAnswer(current: Assessment, question: AssessmentQuestion, answer: string): Assessment {
   const state = structuredClone(current); const id = question.id;
+  state.discoveryIssues=state.discoveryIssues??[];
+  if(id.startsWith("resolve_issue_")) { const resolved=resolveDiscoveryIssue(state,id.slice("resolve_issue_".length),answer); resolved.answers=resolved.answers.filter((item)=>item.question_id!==id); resolved.answers.push({question_id:id,module:question.module,field:question.field,answer,saved_at:new Date().toISOString()}); return resolved; }
+  if(detectsUncertainty(answer)) { const issue=createDiscoveryIssue(question,answer); state.discoveryIssues.push(issue); state.answers=state.answers.filter((item)=>item.question_id!==id); state.answers.push({question_id:id,module:question.module,field:question.field,answer,saved_at:new Date().toISOString()}); const choice=inferUncertaintyChoice(answer); const resolved=choice&&choice!=="unknown"?resolveDiscoveryIssue(state,issue.id,answer):state; resolved.updated_at=new Date().toISOString(); return resolved; }
   const newFacts=extractCapturedFacts(answer,state); state.capturedFacts=mergeCapturedFacts(state.capturedFacts ?? [],newFacts); applyFactsToStructuredState(state,newFacts);
   state.answers = state.answers.filter((item) => item.question_id !== id);
   state.answers.push({ question_id: id, module: question.module, field: question.field, answer, saved_at: new Date().toISOString() });

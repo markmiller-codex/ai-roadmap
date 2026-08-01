@@ -1,0 +1,11 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+import { createEmptyAssessment } from "../lib/initial-state.ts";
+import { createDiscoveryIssue, detectsUncertainty, resolveDiscoveryIssue } from "../lib/discovery-issues.ts";
+import type { AssessmentQuestion } from "../types/assessment.ts";
+
+const question:AssessmentQuestion={id:"response_time",module:"workflows",field:"workflows.response_time",title:"What is the applicant response time?",help:"Enter hours.",priority:1,isComplete:()=>false};
+test("recognizes common uncertainty language",()=>{for(const answer of ["I don't know","not sure","we need to check","use industry average","exclude this","ask me later","skip for now"])assert.equal(detectsUncertainty(answer),true,answer);});
+test("stores an accepted benchmark as a discovery issue and evidence fact",()=>{const state=createEmptyAssessment();const issue=createDiscoveryIssue(question,"I don't know");state.discoveryIssues.push(issue);const updated=resolveDiscoveryIssue(state,issue.id,"Use industry benchmark");assert.equal(updated.discoveryIssues[0].issueType,"benchmark_assumption");assert.equal(updated.discoveryIssues[0].status,"accepted_for_draft");assert.equal(updated.capturedFacts[0].sourceType,"industry_benchmark");assert.equal(updated.capturedFacts[0].confidence,"benchmark_assumption");});
+test("excludes a variable from scoring evidence",()=>{const state=createEmptyAssessment();const issue=createDiscoveryIssue(question,"exclude this");state.discoveryIssues.push(issue);const updated=resolveDiscoveryIssue(state,issue.id,"Exclude from analysis");assert.equal(updated.discoveryIssues[0].status,"excluded");assert.match(updated.discoveryIssues[0].effectOnScoring,/Excluded from scoring/i);assert.equal(updated.capturedFacts.length,0);});
+test("prompts for and stores a rough estimate",()=>{const state=createEmptyAssessment();const issue=createDiscoveryIssue(question,"I don't know");state.discoveryIssues.push(issue);const awaiting=resolveDiscoveryIssue(state,issue.id,"Enter estimate");assert.equal(awaiting.discoveryIssues[0].status,"open");const updated=resolveDiscoveryIssue(awaiting,issue.id,"About 48 hours");assert.equal(updated.discoveryIssues[0].status,"accepted_for_draft");assert.equal(updated.capturedFacts[0].sourceType,"user_estimate");assert.equal(updated.capturedFacts[0].value,48);});
