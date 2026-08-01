@@ -2,12 +2,13 @@ export type Score = 1 | 2 | 3 | 4 | 5;
 export type ExportCapability = "none" | "manual" | "csv" | "api" | "unknown";
 export type IntegrationCapability = "none" | "limited" | "good" | "strong" | "unknown";
 export type OpportunityClassification = "Quick Win" | "Near-Term Project" | "Foundation Project" | "Future Opportunity";
-export type FactConfidence = "exact" | "estimate" | "range" | "unknown_verifiable";
+export type FactSourceType = "user_confirmed" | "user_estimate" | "website" | "industry_benchmark" | "system_inferred" | "unknown_verifiable";
+export type FactConfidence = "exact" | "estimate" | "range" | "benchmark_assumption" | "inferred" | "unknown";
 export type FactValue = string | number | { min: number; max: number };
-export interface CapturedFact { id: string; label: string; value: FactValue; unit: string; timePeriod: string; businessArea: string; workflowId?: string; confidence: FactConfidence; verificationSources: string[]; relatedFields: string[]; createdFromUserAnswer: string; createdAt: string; needsClarification?: boolean; }
+export interface CapturedFact { id: string; label: string; value: FactValue; unit: string; timePeriod: string; businessArea: string; workflowId?: string; sourceType: FactSourceType; sourceUrl?: string; confidence: FactConfidence; verificationSources: string[]; relatedFields: string[]; createdFromUserAnswer: string; createdAt: string; needsClarification?: boolean; needsConfirmation?: boolean; confirmedByUser?: boolean; }
 
 export interface CompanyProfile {
-  company_name: string; industry: string; subindustry: string; locations: number | null;
+  company_name: string; website_url: string; industry: string; subindustry: string; locations: number | null;
   employee_count: number | null; annual_revenue: number | null; years_in_business: number | null;
   customer_types: string[]; revenue_sources: string[]; operating_model: string;
   management_structure: string; strategic_priorities: string[]; current_business_pressures: string[];

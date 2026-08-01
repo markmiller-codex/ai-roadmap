@@ -12,6 +12,10 @@ import type { Assessment, AssessmentQuestion, CapturedFact } from "@/types/asses
 import type { InterviewMessage } from "@/types/session";
 import { ReadinessPanel } from "./ReadinessPanel";
 import { OpportunityTable } from "./OpportunityTable";
+import { applyWebsiteAnalysis } from "@/lib/website-apply";
+import type { WebsiteAnalysis } from "@/lib/website-analysis";
+import { createBenchmarkFacts, findIndustryBenchmark } from "@/lib/industry-benchmarks";
+import { mergeCapturedFacts } from "@/lib/evidence";
 
 type AIResponse = AIInterviewResult & { updated_assessment: Assessment; captured_facts?: CapturedFact[] };
 const answerFor = (assessment: Assessment, question: AssessmentQuestion | null) => question ? assessment.answers.find((item) => item.question_id === question.id)?.answer ?? "" : "";
@@ -33,6 +37,7 @@ export function InterviewApp() {
   const [showResumeNotice, setShowResumeNotice] = useState(false);
   const [sessionStatus, setSessionStatus] = useState("");
   const [capturedFactsThisTurn, setCapturedFactsThisTurn] = useState<CapturedFact[]>([]);
+  const [websiteStatus, setWebsiteStatus] = useState("");
   const importInput = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -56,10 +61,12 @@ export function InterviewApp() {
     catch (error) { setSessionStatus(error instanceof Error ? error.message : "Unable to import that session file."); }
     finally { if (importInput.current) importInput.current.value=""; }
   };
-  const saveAndContinue = () => { if (!question || !answer.trim()) return; const existingIds=new Set((assessment.capturedFacts ?? []).map((fact)=>fact.id)); const updated=applyAnswer(assessment,question,answer); setAssessment(updated); setCapturedFactsThisTurn(updated.capturedFacts.filter((fact)=>!existingIds.has(fact.id))); setSkipped([]); setUpdatedFields([question.field]); selectNext(updated,[]); };
+  const ingestWebsite = async (url:string) => { setWebsiteStatus("Analyzing the public website..."); try { const response=await fetch("/api/website-ingest",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({url})}); const result=await response.json() as {analysis?:WebsiteAnalysis;error?:string}; if (!response.ok||!result.analysis) throw new Error(result.error||"Website analysis failed."); const applied=applyWebsiteAnalysis(assessment,result.analysis,url); setAssessment(applied.assessment); setCapturedFactsThisTurn(applied.facts); setUpdatedFields(["company_profile","business_functions","workflows","technology_stack"]); setSkipped([]); const next=selectNext(applied.assessment,[]); setMessages((current)=>[...current,message("user",url),message("assistant",next?.title??"Website analysis complete.")]); setWebsiteStatus(`Analyzed ${result.analysis.sourceUrls.length} public pages. Review and confirm the captured facts.`); return true; } catch(error) { setWebsiteStatus(error instanceof Error?`${error.message} You can correct the URL or skip this question.`:"Website analysis failed."); return false; } };
+  const saveAndContinue = async () => { if (!question || !answer.trim()) return; if (question.id==="company_website") { if (await ingestWebsite(answer.trim())) setAnswer(""); return; } const existingIds=new Set((assessment.capturedFacts ?? []).map((fact)=>fact.id)); const updated=applyAnswer(assessment,question,answer); setAssessment(updated); setCapturedFactsThisTurn(updated.capturedFacts.filter((fact)=>!existingIds.has(fact.id))); setSkipped([]); setUpdatedFields([question.field]); selectNext(updated,[]); };
   const skip = () => { if (!question) return; const excluded = [...skipped, question.id]; setSkipped(excluded); selectNext(assessment, excluded); };
   const sendAIAnswer = async () => {
     const responseText = aiAnswer.trim(); if (!responseText || !question || aiStatus === "thinking") return;
+    if (question.id==="company_website") { const url=aiAnswer.trim(); setAiAnswer(""); await ingestWebsite(url); return; }
     const currentQuestion = messages.filter((message) => message.role === "assistant").at(-1)?.text ?? question.title;
     setMessages((current) => [...current, message("user",responseText)]); setAiAnswer(""); setAiStatus("thinking"); setUpdatedFields([]);
     try {
@@ -76,6 +83,8 @@ export function InterviewApp() {
     }
   };
   const missing = getMissingData(assessment); const moduleLabel = `${missing.length} ${missing.length === 1 ? "module" : "modules"} remaining`;
+  const benchmark=findIndustryBenchmark(assessment.company_profile.industry); const sourceGroups=[["Confirmed facts",assessment.capturedFacts.filter((f)=>f.sourceType==="user_confirmed")],["User estimates",assessment.capturedFacts.filter((f)=>f.sourceType==="user_estimate")],["Website-derived facts",assessment.capturedFacts.filter((f)=>f.sourceType==="website")],["Industry benchmark assumptions",assessment.capturedFacts.filter((f)=>f.sourceType==="industry_benchmark")],["Unknowns needing verification",assessment.capturedFacts.filter((f)=>f.sourceType==="unknown_verifiable"||f.needsClarification||f.needsConfirmation)]] as const;
+  const applyBenchmark=()=>{ if(!benchmark)return; const facts=createBenchmarkFacts(benchmark,assessment); const next=structuredClone(assessment); next.capturedFacts=mergeCapturedFacts(next.capturedFacts,facts); next.updated_at=new Date().toISOString(); setAssessment(next); setCapturedFactsThisTurn(facts); setSessionStatus(`${facts.length} ${benchmark.label} assumptions added for missing areas. Confirm or replace them during discovery.`); };
 
   return <main>
     <header className="hero"><div><span className="eyebrow">Adaptive AI assessment engine</span><h1>Build a practical AI roadmap</h1><p>A consultant-style AI interview captures natural-language answers into a guarded business data model, with deterministic questions and scoring always available.</p></div>
@@ -83,6 +92,7 @@ export function InterviewApp() {
     </header>
     {showResumeNotice && <aside className="resume-notice" role="status"><div><strong>Saved assessment found.</strong><span>Continue previous session or start new assessment.</span></div><div className="actions"><button onClick={()=>{setShowResumeNotice(false);setSessionStatus("Previous session resumed.");}}>Continue previous session</button><button className="secondary" onClick={reset}>Start new assessment</button></div></aside>}
     {sessionStatus && <p className="session-status" role="status">{sessionStatus}</p>}
+    {websiteStatus && <p className="session-status" role="status">{websiteStatus}</p>}
     <div className="dashboard">
       <section className="panel interview">
         <div className="mode-switch" aria-label="Interview mode"><button className={interviewMode === "ai" ? "active" : "secondary"} onClick={() => setInterviewMode("ai")}>AI interview</button><button className={interviewMode === "deterministic" ? "active" : "secondary"} onClick={() => setInterviewMode("deterministic")}>Module flow</button></div>
@@ -103,6 +113,7 @@ export function InterviewApp() {
       </section>
       <ReadinessPanel assessment={assessment} />
       <OpportunityTable opportunities={assessment.opportunities} />
+      <section className="panel wide"><div className="panel-title"><h2>Data Sources &amp; Confidence</h2><span>{assessment.capturedFacts.length} evidence items</span></div><div className="source-grid">{sourceGroups.map(([label,facts])=><article key={label}><strong>{label}</strong><span>{facts.length}</span>{facts.slice(0,4).map((fact)=><small key={fact.id}>{fact.label}: {factValue(fact)} ({fact.confidence})</small>)}</article>)}</div>{benchmark&&<div className="actions"><button className="secondary" onClick={applyBenchmark}>Add {benchmark.label} benchmark assumptions</button><span className="muted">Only missing areas are supplemented; assumptions remain unconfirmed.</span></div>}</section>
       <section className="panel wide"><div className="panel-title"><h2>Missing data queue</h2><span>{missing.length} questions</span></div>{missing.length ? <ul className="missing-list">{missing.map((item) => <li key={item.questionId}><strong>{item.module.replaceAll("_", " ")}</strong><span>{item.label}</span></li>)}</ul> : <p className="muted">No required modules are missing.</p>}</section>
       <section className="panel wide"><div className="panel-title"><h2>Structured assessment state</h2><span>LocalStorage · schema aligned</span></div><pre>{JSON.stringify(assessment, null, 2)}</pre></section>
     </div>

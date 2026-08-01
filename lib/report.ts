@@ -168,6 +168,14 @@ ${opportunityRows(state.opportunities)}
 
 ${gaps.map((gap)=>`- ${gap}`).join("\n") || "- No target-report coverage gaps remain."}
 
+## Assumptions and Verification Needed
+
+${state.capturedFacts.filter((fact)=>fact.sourceType==="industry_benchmark"||fact.sourceType==="user_estimate"||fact.sourceType==="unknown_verifiable"||fact.needsConfirmation).map((fact)=>`- **${fact.label}:** ${evidenceValue(fact.value)} ${fact.unit} - ${fact.sourceType.replaceAll("_"," ")}, ${fact.confidence}${fact.sourceUrl?` ([source](${fact.sourceUrl}))`:""}.`).join("\n") || "- No material assumptions or unverified values are currently recorded."}
+
+### Opportunity validation status
+
+${state.opportunities.map((opportunity)=>{const related=state.capturedFacts.filter((fact)=>!fact.workflowId||fact.workflowId.toLowerCase()===opportunity.related_workflow.toLowerCase());const status=related.some((fact)=>fact.sourceType==="industry_benchmark")?"Benchmark-based opportunity needing confirmation":related.some((fact)=>fact.sourceType==="user_estimate"||fact.needsConfirmation)?"Promising opportunity needing validation":related.some((fact)=>fact.sourceType==="user_confirmed")?"Implementation-ready opportunity":"Promising opportunity needing validation";return `- ${opportunity.opportunity_name}: ${status}.`;}).join("\n") || "- No opportunities scored."}
+
 ## Draft report status
 
 **Readiness:** ${readiness.percent}% (${completedSections.length} of ${readiness.sections.length} target report sections complete)

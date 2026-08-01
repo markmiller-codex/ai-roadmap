@@ -1,4 +1,4 @@
-import type { Assessment } from "@/types/assessment";
+import type { Assessment, CapturedFact, FactConfidence, FactSourceType } from "@/types/assessment";
 import type { InterviewMessage, SessionSnapshot } from "@/types/session";
 import { createEmptyAssessment } from "./initial-state";
 import { calculateReadiness } from "./readiness";
@@ -8,10 +8,17 @@ const KEY = "ai-roadmap-assessment-v2";
 const SESSION_KEY = "ai-roadmap-session-meta-v1";
 export const APP_VERSION = "0.1.0";
 
+function migrateFact(input: CapturedFact): CapturedFact {
+  const raw=input as unknown as Record<string,unknown>; const oldConfidence=typeof raw.confidence==="string"?raw.confidence:undefined; const oldSourceType=typeof raw.sourceType==="string"?raw.sourceType:undefined;
+  const confidence: FactConfidence = oldConfidence === "unknown_verifiable" ? "unknown" : (["exact","estimate","range","benchmark_assumption","inferred","unknown"].includes(oldConfidence ?? "") ? oldConfidence as FactConfidence : "unknown");
+  const sourceType: FactSourceType = (["user_confirmed","user_estimate","website","industry_benchmark","system_inferred","unknown_verifiable"].includes(oldSourceType ?? "") ? oldSourceType as FactSourceType : oldConfidence === "exact" ? "user_confirmed" : oldConfidence === "estimate" || oldConfidence === "range" ? "user_estimate" : "unknown_verifiable");
+  return {...input,sourceType,confidence,verificationSources:input.verificationSources ?? [],relatedFields:input.relatedFields ?? [],createdFromUserAnswer:input.createdFromUserAnswer ?? "Migrated session"};
+}
+
 export function hydrateAssessment(value: unknown): Assessment {
   if (!value || typeof value !== "object") throw new Error("The session does not contain a valid assessment object.");
   const parsed = value as Partial<Assessment>; const empty = createEmptyAssessment();
-  return { ...empty, ...parsed, company_profile:{...empty.company_profile,...parsed.company_profile}, ai_readiness:{...empty.ai_readiness,...parsed.ai_readiness}, governance_profile:{...empty.governance_profile,...parsed.governance_profile}, capturedFacts:parsed.capturedFacts ?? [], operating_metrics:parsed.operating_metrics ?? [], management_decisions:parsed.management_decisions ?? [], business_functions:parsed.business_functions ?? [], role_groups:parsed.role_groups ?? [], workflows:parsed.workflows ?? [], technology_stack:parsed.technology_stack ?? [], data_assets:parsed.data_assets ?? [], document_assets:parsed.document_assets ?? [], pain_points:parsed.pain_points ?? [], opportunities:parsed.opportunities ?? [], roadmap_phases:parsed.roadmap_phases ?? [], answers:parsed.answers ?? [] };
+  return { ...empty, ...parsed, company_profile:{...empty.company_profile,...parsed.company_profile}, ai_readiness:{...empty.ai_readiness,...parsed.ai_readiness}, governance_profile:{...empty.governance_profile,...parsed.governance_profile}, capturedFacts:(parsed.capturedFacts ?? []).map((fact)=>migrateFact(fact)), operating_metrics:parsed.operating_metrics ?? [], management_decisions:parsed.management_decisions ?? [], business_functions:parsed.business_functions ?? [], role_groups:parsed.role_groups ?? [], workflows:parsed.workflows ?? [], technology_stack:parsed.technology_stack ?? [], data_assets:parsed.data_assets ?? [], document_assets:parsed.document_assets ?? [], pain_points:parsed.pain_points ?? [], opportunities:parsed.opportunities ?? [], roadmap_phases:parsed.roadmap_phases ?? [], answers:parsed.answers ?? [] };
 }
 
 export const hasSavedAssessment = () => typeof window !== "undefined" && localStorage.getItem(KEY) !== null;

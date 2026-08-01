@@ -1,4 +1,4 @@
-import type { Assessment, CapturedFact, FactConfidence, FactValue } from "@/types/assessment";
+import type { Assessment, CapturedFact, FactConfidence, FactSourceType, FactValue } from "@/types/assessment";
 
 const title = (value: string) => value.trim().replace(/^[-–—:\s]+|[-–—:\s]+$/g, "").replace(/\s+/g, " ").replace(/^./, (letter) => letter.toUpperCase());
 const numeric = (value: string) => Number(value.replace(/,/g, ""));
@@ -25,10 +25,11 @@ function context(answer: string, unit: string, assessment?: Assessment) {
   else if (/location|office/i.test(lower)) { label="Location count"; relatedFields.push("company_profile.locations"); }
   return { label:label || `Unlabeled ${unit} value`, businessArea, workflowId, relatedFields:[...new Set(relatedFields)], needsClarification:!label };
 }
-function confidence(answer: string, isRange: boolean): FactConfidence { return isRange ? "range" : /about|approximately|roughly|around|estimate|estimated/i.test(answer) ? "estimate" : "exact"; }
+function confidence(answer: string, isRange: boolean): FactConfidence { return isRange ? "range" : /about|approximately|roughly|around|guess|think|maybe|estimate|estimated/i.test(answer) ? "estimate" : "exact"; }
+function sourceType(answer: string, isRange: boolean, unclear: boolean): FactSourceType { return unclear ? "unknown_verifiable" : isRange || /about|approximately|roughly|around|guess|think|maybe|estimate|estimated/i.test(answer) ? "user_estimate" : "user_confirmed"; }
 function makeFact(answer: string, value: FactValue, unit: string, timePeriod: string, assessment?: Assessment): CapturedFact {
   const classified=context(answer,unit,assessment);
-  return { id:factId(), label:classified.label, value, unit, timePeriod, businessArea:classified.businessArea, workflowId:classified.workflowId, confidence:classified.needsClarification ? "unknown_verifiable" : confidence(answer,typeof value==="object"), verificationSources:["User interview"], relatedFields:classified.relatedFields, createdFromUserAnswer:answer.trim(), createdAt:new Date().toISOString(), needsClarification:classified.needsClarification };
+  return { id:factId(), label:classified.label, value, unit, timePeriod, businessArea:classified.businessArea, workflowId:classified.workflowId, sourceType:sourceType(answer,typeof value==="object",classified.needsClarification), confidence:classified.needsClarification ? "unknown" : confidence(answer,typeof value==="object"), verificationSources:["User interview"], relatedFields:classified.relatedFields, createdFromUserAnswer:answer.trim(), createdAt:new Date().toISOString(), needsClarification:classified.needsClarification };
 }
 
 export function extractCapturedFacts(answer: string, assessment?: Assessment): CapturedFact[] {
@@ -62,9 +63,18 @@ export function applyFactsToStructuredState(assessment: Assessment, facts: Captu
     if (fact.relatedFields.includes("operating_metrics") && typeof fact.value === "number" && !assessment.operating_metrics.some((metric)=>metric.metric_name===fact.label && metric.period===fact.timePeriod && metric.business_context===fact.businessArea)) assessment.operating_metrics.push({metric_name:fact.label,value:fact.value,unit:fact.unit,period:fact.timePeriod,source:fact.verificationSources.join(", "),business_context:fact.businessArea});
   }
 }
-export const factSatisfiesField = (assessment: Assessment, field: string) => (assessment.capturedFacts ?? []).some((fact)=>!fact.needsClarification && fact.relatedFields.some((related)=>related===field || related.startsWith(field) || field.startsWith(related)));
-export const factSatisfiesWorkflowField = (assessment: Assessment, workflowId: string, field: string) => (assessment.capturedFacts ?? []).some((fact)=>!fact.needsClarification && fact.workflowId?.toLowerCase()===workflowId.toLowerCase() && fact.relatedFields.some((related)=>related===field || related.endsWith(`.${field}`)));
+export const factSatisfiesField = (assessment: Assessment, field: string) => (assessment.capturedFacts ?? []).some((fact)=>!fact.needsClarification && fact.sourceType!=="industry_benchmark" && fact.relatedFields.some((related)=>related===field || related.startsWith(field) || field.startsWith(related)));
+export const factSatisfiesWorkflowField = (assessment: Assessment, workflowId: string, field: string) => (assessment.capturedFacts ?? []).some((fact)=>!fact.needsClarification && fact.sourceType!=="industry_benchmark" && fact.workflowId?.toLowerCase()===workflowId.toLowerCase() && fact.relatedFields.some((related)=>related===field || related.endsWith(`.${field}`)));
 export function clarifyCapturedFact(assessment: Assessment, factIdValue: string, clarification: string) {
   const fact=assessment.capturedFacts.find((item)=>item.id===factIdValue); if (!fact) return;
-  const classified=context(clarification,fact.unit,assessment); fact.label=classified.needsClarification ? title(clarification) : classified.label; fact.businessArea=classified.businessArea === "Unclear" ? fact.businessArea : classified.businessArea; fact.workflowId=classified.workflowId ?? fact.workflowId; fact.relatedFields=[...new Set([...fact.relatedFields,...classified.relatedFields])]; fact.needsClarification=false; if (fact.confidence==="unknown_verifiable") fact.confidence=typeof fact.value==="object" ? "range" : "estimate";
+  const classified=context(clarification,fact.unit,assessment); fact.label=classified.needsClarification ? title(clarification) : classified.label; fact.businessArea=classified.businessArea === "Unclear" ? fact.businessArea : classified.businessArea; fact.workflowId=classified.workflowId ?? fact.workflowId; fact.relatedFields=[...new Set([...fact.relatedFields,...classified.relatedFields])]; fact.needsClarification=false; if (fact.confidence==="unknown") fact.confidence=typeof fact.value==="object" ? "range" : "estimate"; if (fact.sourceType==="unknown_verifiable") fact.sourceType="user_estimate";
+}
+
+export function factQuality(fact: CapturedFact) {
+  if (fact.sourceType === "user_confirmed") return fact.confidence === "exact" ? 1 : 0.85;
+  if (fact.sourceType === "website") return fact.confirmedByUser ? 0.95 : 0.75;
+  if (fact.sourceType === "user_estimate") return 0.65;
+  if (fact.sourceType === "system_inferred") return 0.5;
+  if (fact.sourceType === "industry_benchmark") return 0.3;
+  return 0.1;
 }

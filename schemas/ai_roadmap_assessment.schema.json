@@ -8,7 +8,7 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "label", "value", "unit", "timePeriod", "businessArea", "confidence", "verificationSources", "relatedFields", "createdFromUserAnswer", "createdAt"],
+        "required": ["id", "label", "value", "unit", "timePeriod", "businessArea", "sourceType", "confidence", "verificationSources", "relatedFields", "createdFromUserAnswer", "createdAt"],
         "properties": {
           "id": { "type": "string" },
           "label": { "type": "string" },
@@ -17,16 +17,20 @@
           "timePeriod": { "type": "string" },
           "businessArea": { "type": "string" },
           "workflowId": { "type": "string" },
-          "confidence": { "type": "string", "enum": ["exact", "estimate", "range", "unknown_verifiable"] },
+          "sourceType": { "type": "string", "enum": ["user_confirmed", "user_estimate", "website", "industry_benchmark", "system_inferred", "unknown_verifiable"] },
+          "sourceUrl": { "type": "string" },
+          "confidence": { "type": "string", "enum": ["exact", "estimate", "range", "benchmark_assumption", "inferred", "unknown"] },
           "verificationSources": { "type": "array", "items": { "type": "string" } },
           "relatedFields": { "type": "array", "items": { "type": "string" } },
           "createdFromUserAnswer": { "type": "string" },
           "createdAt": { "type": "string" },
-          "needsClarification": { "type": "boolean" }
+          "needsClarification": { "type": "boolean" },
+          "needsConfirmation": { "type": "boolean" },
+          "confirmedByUser": { "type": "boolean" }
         }
       }
     },
-    "company_profile": { "type": "object", "required": ["company_name", "industry", "employee_count", "locations", "management_structure", "customer_types", "revenue_sources", "strategic_priorities"] },
+    "company_profile": { "type": "object", "required": ["company_name", "website_url", "industry", "employee_count", "locations", "management_structure", "customer_types", "revenue_sources", "strategic_priorities"] },
     "operating_metrics": { "type": "array", "items": { "$ref": "#/$defs/operating_metric" } },
     "business_functions": { "type": "array", "items": { "type": "object", "required": ["function_name", "employee_count", "manager_owner", "importance", "pain_level", "systems_used"] } },
     "role_groups": { "type": "array", "items": { "type": "object", "required": ["role_name", "function_name", "headcount", "responsibilities", "pain_points"] } },

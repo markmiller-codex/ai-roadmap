@@ -1,4 +1,4 @@
-import type { Assessment, CapturedFact, FactConfidence, FactValue, MetricTarget, QuestionModuleId, Score } from "@/types/assessment";
+import type { Assessment, CapturedFact, FactConfidence, FactSourceType, FactValue, MetricTarget, QuestionModuleId, Score } from "@/types/assessment";
 import { buildRoadmapPhases, opportunityFromWorkflow } from "./scoring";
 import { applyFactsToStructuredState, mergeCapturedFacts } from "./evidence";
 
@@ -15,7 +15,7 @@ export interface AIInterviewResult {
 
 type Kind = "string" | "number" | "nullable-number" | "boolean" | "score" | "nullable-score" | "string-array" | "metric-array";
 const leafRules: Record<string, Kind> = {
-  "company_profile.company_name": "string", "company_profile.industry": "string", "company_profile.subindustry": "string",
+  "company_profile.company_name": "string", "company_profile.website_url":"string", "company_profile.industry": "string", "company_profile.subindustry": "string",
   "company_profile.locations": "nullable-number", "company_profile.employee_count": "nullable-number", "company_profile.annual_revenue": "nullable-number", "company_profile.years_in_business": "nullable-number",
   "company_profile.customer_types": "string-array", "company_profile.revenue_sources": "string-array", "company_profile.operating_model": "string", "company_profile.management_structure": "string",
   "company_profile.strategic_priorities": "string-array", "company_profile.current_business_pressures": "string-array",
@@ -88,8 +88,9 @@ function cleanFactValue(value: unknown): FactValue | undefined {
 }
 function cleanFacts(value: unknown): CapturedFact[] | undefined {
   value=decoded(value,"records"); if (!Array.isArray(value)) return;
-  const confidenceValues:FactConfidence[]=["exact","estimate","range","unknown_verifiable"];
-  return value.slice(0,50).flatMap((item):CapturedFact[]=>{ if (!item || typeof item!=="object" || Array.isArray(item)) return []; const source=item as Record<string,unknown>; const factValue=cleanFactValue(source.value), label=cleanString(source.label), unit=cleanString(source.unit), timePeriod=cleanString(source.timePeriod), businessArea=cleanString(source.businessArea), createdFromUserAnswer=cleanString(source.createdFromUserAnswer); const confidence=confidenceValues.includes(source.confidence as FactConfidence) ? source.confidence as FactConfidence : undefined; const verificationSources=clean(source.verificationSources,"string-array"), relatedFields=clean(source.relatedFields,"string-array"), workflowId=source.workflowId === undefined || source.workflowId === null ? undefined : cleanString(source.workflowId); if (factValue===undefined || !label || !unit || !timePeriod || !businessArea || !confidence || !Array.isArray(verificationSources) || !Array.isArray(relatedFields) || !createdFromUserAnswer) return []; return [{id:cleanString(source.id) || `fact-${Date.now()}-${Math.random().toString(36).slice(2,8)}`,label,value:factValue,unit,timePeriod,businessArea,workflowId,confidence,verificationSources:verificationSources as string[],relatedFields:relatedFields as string[],createdFromUserAnswer,createdAt:new Date().toISOString(),needsClarification:confidence==="unknown_verifiable" || label.toLowerCase().startsWith("unlabeled")}]; });
+  const confidenceValues:FactConfidence[]=["exact","estimate","range","benchmark_assumption","inferred","unknown"];
+  const sourceValues:FactSourceType[]=["user_confirmed","user_estimate","website","industry_benchmark","system_inferred","unknown_verifiable"];
+  return value.slice(0,50).flatMap((item):CapturedFact[]=>{ if (!item || typeof item!=="object" || Array.isArray(item)) return []; const source=item as Record<string,unknown>; const factValue=cleanFactValue(source.value), label=cleanString(source.label), unit=cleanString(source.unit), timePeriod=cleanString(source.timePeriod), businessArea=cleanString(source.businessArea), createdFromUserAnswer=cleanString(source.createdFromUserAnswer); const confidence=confidenceValues.includes(source.confidence as FactConfidence) ? source.confidence as FactConfidence : undefined; const sourceType=sourceValues.includes(source.sourceType as FactSourceType) ? source.sourceType as FactSourceType : undefined; const verificationSources=clean(source.verificationSources,"string-array"), relatedFields=clean(source.relatedFields,"string-array"), workflowId=source.workflowId === undefined || source.workflowId === null ? undefined : cleanString(source.workflowId); if (factValue===undefined || !label || !unit || !timePeriod || !businessArea || !confidence || !sourceType || !Array.isArray(verificationSources) || !Array.isArray(relatedFields) || !createdFromUserAnswer) return []; return [{id:cleanString(source.id) || `fact-${Date.now()}-${Math.random().toString(36).slice(2,8)}`,label,value:factValue,unit,timePeriod,businessArea,workflowId,sourceType,confidence,verificationSources:verificationSources as string[],relatedFields:relatedFields as string[],createdFromUserAnswer,createdAt:new Date().toISOString(),needsClarification:confidence==="unknown" || label.toLowerCase().startsWith("unlabeled")}]; });
 }
 
 export function applyAIUpdates(current: Assessment, updates: ProposedStateUpdate[]) {
