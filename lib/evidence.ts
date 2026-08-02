@@ -72,6 +72,7 @@ export function clarifyCapturedFact(assessment: Assessment, factIdValue: string,
 
 export function factQuality(fact: CapturedFact) {
   if (fact.sourceType === "user_confirmed") return fact.confidence === "exact" ? 1 : 0.85;
+  if (fact.sourceType === "user_corrected") return 1;
   if (fact.sourceType === "website") return fact.confirmedByUser ? 0.95 : 0.75;
   if (fact.sourceType === "user_estimate") return 0.65;
   if (fact.sourceType === "system_inferred") return 0.5;

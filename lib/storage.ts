@@ -11,7 +11,7 @@ export const APP_VERSION = "0.1.0";
 function migrateFact(input: CapturedFact): CapturedFact {
   const raw=input as unknown as Record<string,unknown>; const oldConfidence=typeof raw.confidence==="string"?raw.confidence:undefined; const oldSourceType=typeof raw.sourceType==="string"?raw.sourceType:undefined;
   const confidence: FactConfidence = oldConfidence === "unknown_verifiable" ? "unknown" : (["exact","estimate","range","benchmark_assumption","inferred","unknown","excluded"].includes(oldConfidence ?? "") ? oldConfidence as FactConfidence : "unknown");
-  const sourceType: FactSourceType = (["user_confirmed","user_estimate","website","industry_benchmark","system_inferred","unknown_verifiable","excluded_by_user"].includes(oldSourceType ?? "") ? oldSourceType as FactSourceType : oldConfidence === "exact" ? "user_confirmed" : oldConfidence === "estimate" || oldConfidence === "range" ? "user_estimate" : "unknown_verifiable");
+  const sourceType: FactSourceType = (["user_confirmed","user_corrected","user_estimate","website","industry_benchmark","system_inferred","unknown_verifiable","excluded_by_user"].includes(oldSourceType ?? "") ? oldSourceType as FactSourceType : oldConfidence === "exact" ? "user_confirmed" : oldConfidence === "estimate" || oldConfidence === "range" ? "user_estimate" : "unknown_verifiable");
   return {...input,sourceType,confidence,verificationSources:input.verificationSources ?? [],relatedFields:input.relatedFields ?? [],createdFromUserAnswer:input.createdFromUserAnswer ?? "Migrated session"};
 }
 

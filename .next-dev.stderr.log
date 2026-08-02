@@ -17728,3 +17728,695 @@ Import traces:
     ./components/InterviewApp.tsx [Client Component SSR]
     ./components/InterviewApp.tsx [Server Component]
     ./app/page.tsx [Server Component] 
+⨯ ./components/InterviewApp.tsx:20:1
+Module not found: Can't resolve './WebsiteFactsReview'
+  [90m18 |[0m [36mimport[0m { mergeCapturedFacts } [36mfrom[0m [32m"@/lib/evidence"[0m;
+  [90m19 |[0m [36mimport[0m { issueCounts } [36mfrom[0m [32m"@/lib/discovery-issues"[0m;
+[31m[1m>[0m [90m20 |[0m [36mimport[0m { [33mWebsiteFactsReview[0m } [36mfrom[0m [32m"./WebsiteFactsReview"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m21 |[0m [36mimport[0m { [33mWorkflowConfirmation[0m } [36mfrom[0m [32m"./WorkflowConfirmation"[0m;
+  [90m22 |[0m
+  [90m23 |[0m [36mtype[0m [33mAIResponse[0m = [33mAIInterviewResult[0m & { updated_assessment: [33mAssessment[0m; captured_facts?: [33mC...[0m
+
+
+
+Import trace:
+  Server Component:
+    ./components/InterviewApp.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/InterviewApp.tsx:20:1
+Module not found: Can't resolve './WebsiteFactsReview'
+  [90m18 |[0m [36mimport[0m { mergeCapturedFacts } [36mfrom[0m [32m"@/lib/evidence"[0m;
+  [90m19 |[0m [36mimport[0m { issueCounts } [36mfrom[0m [32m"@/lib/discovery-issues"[0m;
+[31m[1m>[0m [90m20 |[0m [36mimport[0m { [33mWebsiteFactsReview[0m } [36mfrom[0m [32m"./WebsiteFactsReview"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m21 |[0m [36mimport[0m { [33mWorkflowConfirmation[0m } [36mfrom[0m [32m"./WorkflowConfirmation"[0m;
+  [90m22 |[0m
+  [90m23 |[0m [36mtype[0m [33mAIResponse[0m = [33mAIInterviewResult[0m & { updated_assessment: [33mAssessment[0m; captured_facts?: [33mC...[0m
+
+
+
+Import trace:
+  Server Component:
+    ./components/InterviewApp.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/InterviewApp.tsx:20:1
+Module not found: Can't resolve './WebsiteFactsReview'
+  [90m18 |[0m [36mimport[0m { mergeCapturedFacts } [36mfrom[0m [32m"@/lib/evidence"[0m;
+  [90m19 |[0m [36mimport[0m { issueCounts } [36mfrom[0m [32m"@/lib/discovery-issues"[0m;
+[31m[1m>[0m [90m20 |[0m [36mimport[0m { [33mWebsiteFactsReview[0m } [36mfrom[0m [32m"./WebsiteFactsReview"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m21 |[0m [36mimport[0m { [33mWorkflowConfirmation[0m } [36mfrom[0m [32m"./WorkflowConfirmation"[0m;
+  [90m22 |[0m
+  [90m23 |[0m [36mtype[0m [33mAIResponse[0m = [33mAIInterviewResult[0m & { updated_assessment: [33mAssessment[0m; captured_facts?: [33mC...[0m
+
+
+
+Import trace:
+  Server Component:
+    ./components/InterviewApp.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/InterviewApp.tsx:20:1
+Module not found: Can't resolve './WebsiteFactsReview'
+  [90m18 |[0m [36mimport[0m { mergeCapturedFacts } [36mfrom[0m [32m"@/lib/evidence"[0m;
+  [90m19 |[0m [36mimport[0m { issueCounts } [36mfrom[0m [32m"@/lib/discovery-issues"[0m;
+[31m[1m>[0m [90m20 |[0m [36mimport[0m { [33mWebsiteFactsReview[0m } [36mfrom[0m [32m"./WebsiteFactsReview"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m21 |[0m [36mimport[0m { [33mWorkflowConfirmation[0m } [36mfrom[0m [32m"./WorkflowConfirmation"[0m;
+  [90m22 |[0m
+  [90m23 |[0m [36mtype[0m [33mAIResponse[0m = [33mAIInterviewResult[0m & { updated_assessment: [33mAssessment[0m; captured_facts?: [33mC...[0m
+
+
+
+Import trace:
+  Server Component:
+    ./components/InterviewApp.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/InterviewApp.tsx:20:1
+Module not found: Can't resolve './WebsiteFactsReview'
+  [90m18 |[0m [36mimport[0m { mergeCapturedFacts } [36mfrom[0m [32m"@/lib/evidence"[0m;
+  [90m19 |[0m [36mimport[0m { issueCounts } [36mfrom[0m [32m"@/lib/discovery-issues"[0m;
+[31m[1m>[0m [90m20 |[0m [36mimport[0m { [33mWebsiteFactsReview[0m } [36mfrom[0m [32m"./WebsiteFactsReview"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m21 |[0m [36mimport[0m { [33mWorkflowConfirmation[0m } [36mfrom[0m [32m"./WorkflowConfirmation"[0m;
+  [90m22 |[0m
+  [90m23 |[0m [36mtype[0m [33mAIResponse[0m = [33mAIInterviewResult[0m & { updated_assessment: [33mAssessment[0m; captured_facts?: [33mC...[0m
+
+
+
+Import trace:
+  Server Component:
+    ./components/InterviewApp.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/InterviewApp.tsx:20:1
+Module not found: Can't resolve './WebsiteFactsReview'
+  [90m18 |[0m [36mimport[0m { mergeCapturedFacts } [36mfrom[0m [32m"@/lib/evidence"[0m;
+  [90m19 |[0m [36mimport[0m { issueCounts } [36mfrom[0m [32m"@/lib/discovery-issues"[0m;
+[31m[1m>[0m [90m20 |[0m [36mimport[0m { [33mWebsiteFactsReview[0m } [36mfrom[0m [32m"./WebsiteFactsReview"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m21 |[0m [36mimport[0m { [33mWorkflowConfirmation[0m } [36mfrom[0m [32m"./WorkflowConfirmation"[0m;
+  [90m22 |[0m
+  [90m23 |[0m [36mtype[0m [33mAIResponse[0m = [33mAIInterviewResult[0m & { updated_assessment: [33mAssessment[0m; captured_facts?: [33mC...[0m
+
+
+
+Import trace:
+  Server Component:
+    ./components/InterviewApp.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/InterviewApp.tsx:20:1
+Module not found: Can't resolve './WebsiteFactsReview'
+  [90m18 |[0m [36mimport[0m { mergeCapturedFacts } [36mfrom[0m [32m"@/lib/evidence"[0m;
+  [90m19 |[0m [36mimport[0m { issueCounts } [36mfrom[0m [32m"@/lib/discovery-issues"[0m;
+[31m[1m>[0m [90m20 |[0m [36mimport[0m { [33mWebsiteFactsReview[0m } [36mfrom[0m [32m"./WebsiteFactsReview"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m21 |[0m [36mimport[0m { [33mWorkflowConfirmation[0m } [36mfrom[0m [32m"./WorkflowConfirmation"[0m;
+  [90m22 |[0m
+  [90m23 |[0m [36mtype[0m [33mAIResponse[0m = [33mAIInterviewResult[0m & { updated_assessment: [33mAssessment[0m; captured_facts?: [33mC...[0m
+
+
+
+Import trace:
+  Server Component:
+    ./components/InterviewApp.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/InterviewApp.tsx:20:1
+Module not found: Can't resolve './WebsiteFactsReview'
+  [90m18 |[0m [36mimport[0m { mergeCapturedFacts } [36mfrom[0m [32m"@/lib/evidence"[0m;
+  [90m19 |[0m [36mimport[0m { issueCounts } [36mfrom[0m [32m"@/lib/discovery-issues"[0m;
+[31m[1m>[0m [90m20 |[0m [36mimport[0m { [33mWebsiteFactsReview[0m } [36mfrom[0m [32m"./WebsiteFactsReview"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m21 |[0m [36mimport[0m { [33mWorkflowConfirmation[0m } [36mfrom[0m [32m"./WorkflowConfirmation"[0m;
+  [90m22 |[0m
+  [90m23 |[0m [36mtype[0m [33mAIResponse[0m = [33mAIInterviewResult[0m & { updated_assessment: [33mAssessment[0m; captured_facts?: [33mC...[0m
+
+
+
+Import trace:
+  Server Component:
+    ./components/InterviewApp.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/InterviewApp.tsx:20:1
+Module not found: Can't resolve './WebsiteFactsReview'
+  [90m18 |[0m [36mimport[0m { mergeCapturedFacts } [36mfrom[0m [32m"@/lib/evidence"[0m;
+  [90m19 |[0m [36mimport[0m { issueCounts } [36mfrom[0m [32m"@/lib/discovery-issues"[0m;
+[31m[1m>[0m [90m20 |[0m [36mimport[0m { [33mWebsiteFactsReview[0m } [36mfrom[0m [32m"./WebsiteFactsReview"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m21 |[0m [36mimport[0m { [33mWorkflowConfirmation[0m } [36mfrom[0m [32m"./WorkflowConfirmation"[0m;
+  [90m22 |[0m
+  [90m23 |[0m [36mtype[0m [33mAIResponse[0m = [33mAIInterviewResult[0m & { updated_assessment: [33mAssessment[0m; captured_facts?: [33mC...[0m
+
+
+
+Import trace:
+  Server Component:
+    ./components/InterviewApp.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/InterviewApp.tsx:20:1
+Module not found: Can't resolve './WebsiteFactsReview'
+  [90m18 |[0m [36mimport[0m { mergeCapturedFacts } [36mfrom[0m [32m"@/lib/evidence"[0m;
+  [90m19 |[0m [36mimport[0m { issueCounts } [36mfrom[0m [32m"@/lib/discovery-issues"[0m;
+[31m[1m>[0m [90m20 |[0m [36mimport[0m { [33mWebsiteFactsReview[0m } [36mfrom[0m [32m"./WebsiteFactsReview"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m21 |[0m [36mimport[0m { [33mWorkflowConfirmation[0m } [36mfrom[0m [32m"./WorkflowConfirmation"[0m;
+  [90m22 |[0m
+  [90m23 |[0m [36mtype[0m [33mAIResponse[0m = [33mAIInterviewResult[0m & { updated_assessment: [33mAssessment[0m; captured_facts?: [33mC...[0m
+
+
+
+Import trace:
+  Server Component:
+    ./components/InterviewApp.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/InterviewApp.tsx:20:1
+Module not found: Can't resolve './WebsiteFactsReview'
+  [90m18 |[0m [36mimport[0m { mergeCapturedFacts } [36mfrom[0m [32m"@/lib/evidence"[0m;
+  [90m19 |[0m [36mimport[0m { issueCounts } [36mfrom[0m [32m"@/lib/discovery-issues"[0m;
+[31m[1m>[0m [90m20 |[0m [36mimport[0m { [33mWebsiteFactsReview[0m } [36mfrom[0m [32m"./WebsiteFactsReview"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m21 |[0m [36mimport[0m { [33mWorkflowConfirmation[0m } [36mfrom[0m [32m"./WorkflowConfirmation"[0m;
+  [90m22 |[0m
+  [90m23 |[0m [36mtype[0m [33mAIResponse[0m = [33mAIInterviewResult[0m & { updated_assessment: [33mAssessment[0m; captured_facts?: [33mC...[0m
+
+
+
+Import trace:
+  Server Component:
+    ./components/InterviewApp.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/InterviewApp.tsx:20:1
+Module not found: Can't resolve './WebsiteFactsReview'
+  [90m18 |[0m [36mimport[0m { mergeCapturedFacts } [36mfrom[0m [32m"@/lib/evidence"[0m;
+  [90m19 |[0m [36mimport[0m { issueCounts } [36mfrom[0m [32m"@/lib/discovery-issues"[0m;
+[31m[1m>[0m [90m20 |[0m [36mimport[0m { [33mWebsiteFactsReview[0m } [36mfrom[0m [32m"./WebsiteFactsReview"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m21 |[0m [36mimport[0m { [33mWorkflowConfirmation[0m } [36mfrom[0m [32m"./WorkflowConfirmation"[0m;
+  [90m22 |[0m
+  [90m23 |[0m [36mtype[0m [33mAIResponse[0m = [33mAIInterviewResult[0m & { updated_assessment: [33mAssessment[0m; captured_facts?: [33mC...[0m
+
+
+
+Import trace:
+  Server Component:
+    ./components/InterviewApp.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/InterviewApp.tsx:20:1
+Module not found: Can't resolve './WebsiteFactsReview'
+  [90m18 |[0m [36mimport[0m { mergeCapturedFacts } [36mfrom[0m [32m"@/lib/evidence"[0m;
+  [90m19 |[0m [36mimport[0m { issueCounts } [36mfrom[0m [32m"@/lib/discovery-issues"[0m;
+[31m[1m>[0m [90m20 |[0m [36mimport[0m { [33mWebsiteFactsReview[0m } [36mfrom[0m [32m"./WebsiteFactsReview"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m21 |[0m [36mimport[0m { [33mWorkflowConfirmation[0m } [36mfrom[0m [32m"./WorkflowConfirmation"[0m;
+  [90m22 |[0m
+  [90m23 |[0m [36mtype[0m [33mAIResponse[0m = [33mAIInterviewResult[0m & { updated_assessment: [33mAssessment[0m; captured_facts?: [33mC...[0m
+
+
+
+Import trace:
+  Server Component:
+    ./components/InterviewApp.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/InterviewApp.tsx:20:1
+Module not found: Can't resolve './WebsiteFactsReview'
+  [90m18 |[0m [36mimport[0m { mergeCapturedFacts } [36mfrom[0m [32m"@/lib/evidence"[0m;
+  [90m19 |[0m [36mimport[0m { issueCounts } [36mfrom[0m [32m"@/lib/discovery-issues"[0m;
+[31m[1m>[0m [90m20 |[0m [36mimport[0m { [33mWebsiteFactsReview[0m } [36mfrom[0m [32m"./WebsiteFactsReview"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m21 |[0m [36mimport[0m { [33mWorkflowConfirmation[0m } [36mfrom[0m [32m"./WorkflowConfirmation"[0m;
+  [90m22 |[0m
+  [90m23 |[0m [36mtype[0m [33mAIResponse[0m = [33mAIInterviewResult[0m & { updated_assessment: [33mAssessment[0m; captured_facts?: [33mC...[0m
+
+
+
+Import trace:
+  Server Component:
+    ./components/InterviewApp.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/InterviewApp.tsx:20:1
+Module not found: Can't resolve './WebsiteFactsReview'
+  [90m18 |[0m [36mimport[0m { mergeCapturedFacts } [36mfrom[0m [32m"@/lib/evidence"[0m;
+  [90m19 |[0m [36mimport[0m { issueCounts } [36mfrom[0m [32m"@/lib/discovery-issues"[0m;
+[31m[1m>[0m [90m20 |[0m [36mimport[0m { [33mWebsiteFactsReview[0m } [36mfrom[0m [32m"./WebsiteFactsReview"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m21 |[0m [36mimport[0m { [33mWorkflowConfirmation[0m } [36mfrom[0m [32m"./WorkflowConfirmation"[0m;
+  [90m22 |[0m
+  [90m23 |[0m [36mtype[0m [33mAIResponse[0m = [33mAIInterviewResult[0m & { updated_assessment: [33mAssessment[0m; captured_facts?: [33mC...[0m
+
+
+
+Import trace:
+  Server Component:
+    ./components/InterviewApp.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/InterviewApp.tsx:20:1
+Module not found: Can't resolve './WebsiteFactsReview'
+  [90m18 |[0m [36mimport[0m { mergeCapturedFacts } [36mfrom[0m [32m"@/lib/evidence"[0m;
+  [90m19 |[0m [36mimport[0m { issueCounts } [36mfrom[0m [32m"@/lib/discovery-issues"[0m;
+[31m[1m>[0m [90m20 |[0m [36mimport[0m { [33mWebsiteFactsReview[0m } [36mfrom[0m [32m"./WebsiteFactsReview"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m21 |[0m [36mimport[0m { [33mWorkflowConfirmation[0m } [36mfrom[0m [32m"./WorkflowConfirmation"[0m;
+  [90m22 |[0m
+  [90m23 |[0m [36mtype[0m [33mAIResponse[0m = [33mAIInterviewResult[0m & { updated_assessment: [33mAssessment[0m; captured_facts?: [33mC...[0m
+
+
+
+Import trace:
+  Server Component:
+    ./components/InterviewApp.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/InterviewApp.tsx:20:1
+Module not found: Can't resolve './WebsiteFactsReview'
+  [90m18 |[0m [36mimport[0m { mergeCapturedFacts } [36mfrom[0m [32m"@/lib/evidence"[0m;
+  [90m19 |[0m [36mimport[0m { issueCounts } [36mfrom[0m [32m"@/lib/discovery-issues"[0m;
+[31m[1m>[0m [90m20 |[0m [36mimport[0m { [33mWebsiteFactsReview[0m } [36mfrom[0m [32m"./WebsiteFactsReview"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m21 |[0m [36mimport[0m { [33mWorkflowConfirmation[0m } [36mfrom[0m [32m"./WorkflowConfirmation"[0m;
+  [90m22 |[0m
+  [90m23 |[0m [36mtype[0m [33mAIResponse[0m = [33mAIInterviewResult[0m & { updated_assessment: [33mAssessment[0m; captured_facts?: [33mC...[0m
+
+
+
+Import trace:
+  Server Component:
+    ./components/InterviewApp.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/InterviewApp.tsx:20:1
+Module not found: Can't resolve './WebsiteFactsReview'
+  [90m18 |[0m [36mimport[0m { mergeCapturedFacts } [36mfrom[0m [32m"@/lib/evidence"[0m;
+  [90m19 |[0m [36mimport[0m { issueCounts } [36mfrom[0m [32m"@/lib/discovery-issues"[0m;
+[31m[1m>[0m [90m20 |[0m [36mimport[0m { [33mWebsiteFactsReview[0m } [36mfrom[0m [32m"./WebsiteFactsReview"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m21 |[0m [36mimport[0m { [33mWorkflowConfirmation[0m } [36mfrom[0m [32m"./WorkflowConfirmation"[0m;
+  [90m22 |[0m
+  [90m23 |[0m [36mtype[0m [33mAIResponse[0m = [33mAIInterviewResult[0m & { updated_assessment: [33mAssessment[0m; captured_facts?: [33mC...[0m
+
+
+
+Import trace:
+  Server Component:
+    ./components/InterviewApp.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/InterviewApp.tsx:20:1
+Module not found: Can't resolve './WebsiteFactsReview'
+  [90m18 |[0m [36mimport[0m { mergeCapturedFacts } [36mfrom[0m [32m"@/lib/evidence"[0m;
+  [90m19 |[0m [36mimport[0m { issueCounts } [36mfrom[0m [32m"@/lib/discovery-issues"[0m;
+[31m[1m>[0m [90m20 |[0m [36mimport[0m { [33mWebsiteFactsReview[0m } [36mfrom[0m [32m"./WebsiteFactsReview"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m21 |[0m [36mimport[0m { [33mWorkflowConfirmation[0m } [36mfrom[0m [32m"./WorkflowConfirmation"[0m;
+  [90m22 |[0m
+  [90m23 |[0m [36mtype[0m [33mAIResponse[0m = [33mAIInterviewResult[0m & { updated_assessment: [33mAssessment[0m; captured_facts?: [33mC...[0m
+
+
+
+Import trace:
+  Server Component:
+    ./components/InterviewApp.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/InterviewApp.tsx:20:1
+Module not found: Can't resolve './WebsiteFactsReview'
+  [90m18 |[0m [36mimport[0m { mergeCapturedFacts } [36mfrom[0m [32m"@/lib/evidence"[0m;
+  [90m19 |[0m [36mimport[0m { issueCounts } [36mfrom[0m [32m"@/lib/discovery-issues"[0m;
+[31m[1m>[0m [90m20 |[0m [36mimport[0m { [33mWebsiteFactsReview[0m } [36mfrom[0m [32m"./WebsiteFactsReview"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m21 |[0m [36mimport[0m { [33mWorkflowConfirmation[0m } [36mfrom[0m [32m"./WorkflowConfirmation"[0m;
+  [90m22 |[0m
+  [90m23 |[0m [36mtype[0m [33mAIResponse[0m = [33mAIInterviewResult[0m & { updated_assessment: [33mAssessment[0m; captured_facts?: [33mC...[0m
+
+
+
+Import trace:
+  Server Component:
+    ./components/InterviewApp.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/InterviewApp.tsx:20:1
+Module not found: Can't resolve './WebsiteFactsReview'
+  [90m18 |[0m [36mimport[0m { mergeCapturedFacts } [36mfrom[0m [32m"@/lib/evidence"[0m;
+  [90m19 |[0m [36mimport[0m { issueCounts } [36mfrom[0m [32m"@/lib/discovery-issues"[0m;
+[31m[1m>[0m [90m20 |[0m [36mimport[0m { [33mWebsiteFactsReview[0m } [36mfrom[0m [32m"./WebsiteFactsReview"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m21 |[0m [36mimport[0m { [33mWorkflowConfirmation[0m } [36mfrom[0m [32m"./WorkflowConfirmation"[0m;
+  [90m22 |[0m
+  [90m23 |[0m [36mtype[0m [33mAIResponse[0m = [33mAIInterviewResult[0m & { updated_assessment: [33mAssessment[0m; captured_facts?: [33mC...[0m
+
+
+
+Import trace:
+  Server Component:
+    ./components/InterviewApp.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/InterviewApp.tsx:20:1
+Module not found: Can't resolve './WebsiteFactsReview'
+  [90m18 |[0m [36mimport[0m { mergeCapturedFacts } [36mfrom[0m [32m"@/lib/evidence"[0m;
+  [90m19 |[0m [36mimport[0m { issueCounts } [36mfrom[0m [32m"@/lib/discovery-issues"[0m;
+[31m[1m>[0m [90m20 |[0m [36mimport[0m { [33mWebsiteFactsReview[0m } [36mfrom[0m [32m"./WebsiteFactsReview"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m21 |[0m [36mimport[0m { [33mWorkflowConfirmation[0m } [36mfrom[0m [32m"./WorkflowConfirmation"[0m;
+  [90m22 |[0m
+  [90m23 |[0m [36mtype[0m [33mAIResponse[0m = [33mAIInterviewResult[0m & { updated_assessment: [33mAssessment[0m; captured_facts?: [33mC...[0m
+
+
+
+Import trace:
+  Server Component:
+    ./components/InterviewApp.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/InterviewApp.tsx:20:1
+Module not found: Can't resolve './WebsiteFactsReview'
+  [90m18 |[0m [36mimport[0m { mergeCapturedFacts } [36mfrom[0m [32m"@/lib/evidence"[0m;
+  [90m19 |[0m [36mimport[0m { issueCounts } [36mfrom[0m [32m"@/lib/discovery-issues"[0m;
+[31m[1m>[0m [90m20 |[0m [36mimport[0m { [33mWebsiteFactsReview[0m } [36mfrom[0m [32m"./WebsiteFactsReview"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m21 |[0m [36mimport[0m { [33mWorkflowConfirmation[0m } [36mfrom[0m [32m"./WorkflowConfirmation"[0m;
+  [90m22 |[0m
+  [90m23 |[0m [36mtype[0m [33mAIResponse[0m = [33mAIInterviewResult[0m & { updated_assessment: [33mAssessment[0m; captured_facts?: [33mC...[0m
+
+
+
+Import trace:
+  Server Component:
+    ./components/InterviewApp.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/InterviewApp.tsx:20:1
+Module not found: Can't resolve './WebsiteFactsReview'
+  [90m18 |[0m [36mimport[0m { mergeCapturedFacts } [36mfrom[0m [32m"@/lib/evidence"[0m;
+  [90m19 |[0m [36mimport[0m { issueCounts } [36mfrom[0m [32m"@/lib/discovery-issues"[0m;
+[31m[1m>[0m [90m20 |[0m [36mimport[0m { [33mWebsiteFactsReview[0m } [36mfrom[0m [32m"./WebsiteFactsReview"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m21 |[0m [36mimport[0m { [33mWorkflowConfirmation[0m } [36mfrom[0m [32m"./WorkflowConfirmation"[0m;
+  [90m22 |[0m
+  [90m23 |[0m [36mtype[0m [33mAIResponse[0m = [33mAIInterviewResult[0m & { updated_assessment: [33mAssessment[0m; captured_facts?: [33mC...[0m
+
+
+
+Import trace:
+  Server Component:
+    ./components/InterviewApp.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/InterviewApp.tsx:20:1
+Module not found: Can't resolve './WebsiteFactsReview'
+  [90m18 |[0m [36mimport[0m { mergeCapturedFacts } [36mfrom[0m [32m"@/lib/evidence"[0m;
+  [90m19 |[0m [36mimport[0m { issueCounts } [36mfrom[0m [32m"@/lib/discovery-issues"[0m;
+[31m[1m>[0m [90m20 |[0m [36mimport[0m { [33mWebsiteFactsReview[0m } [36mfrom[0m [32m"./WebsiteFactsReview"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m21 |[0m [36mimport[0m { [33mWorkflowConfirmation[0m } [36mfrom[0m [32m"./WorkflowConfirmation"[0m;
+  [90m22 |[0m
+  [90m23 |[0m [36mtype[0m [33mAIResponse[0m = [33mAIInterviewResult[0m & { updated_assessment: [33mAssessment[0m; captured_facts?: [33mC...[0m
+
+
+
+Import trace:
+  Server Component:
+    ./components/InterviewApp.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/InterviewApp.tsx:20:1
+Module not found: Can't resolve './WebsiteFactsReview'
+  [90m18 |[0m [36mimport[0m { mergeCapturedFacts } [36mfrom[0m [32m"@/lib/evidence"[0m;
+  [90m19 |[0m [36mimport[0m { issueCounts } [36mfrom[0m [32m"@/lib/discovery-issues"[0m;
+[31m[1m>[0m [90m20 |[0m [36mimport[0m { [33mWebsiteFactsReview[0m } [36mfrom[0m [32m"./WebsiteFactsReview"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m21 |[0m [36mimport[0m { [33mWorkflowConfirmation[0m } [36mfrom[0m [32m"./WorkflowConfirmation"[0m;
+  [90m22 |[0m
+  [90m23 |[0m [36mtype[0m [33mAIResponse[0m = [33mAIInterviewResult[0m & { updated_assessment: [33mAssessment[0m; captured_facts?: [33mC...[0m
+
+
+
+Import trace:
+  Server Component:
+    ./components/InterviewApp.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/InterviewApp.tsx:20:1
+Module not found: Can't resolve './WebsiteFactsReview'
+  [90m18 |[0m [36mimport[0m { mergeCapturedFacts } [36mfrom[0m [32m"@/lib/evidence"[0m;
+  [90m19 |[0m [36mimport[0m { issueCounts } [36mfrom[0m [32m"@/lib/discovery-issues"[0m;
+[31m[1m>[0m [90m20 |[0m [36mimport[0m { [33mWebsiteFactsReview[0m } [36mfrom[0m [32m"./WebsiteFactsReview"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m21 |[0m [36mimport[0m { [33mWorkflowConfirmation[0m } [36mfrom[0m [32m"./WorkflowConfirmation"[0m;
+  [90m22 |[0m
+  [90m23 |[0m [36mtype[0m [33mAIResponse[0m = [33mAIInterviewResult[0m & { updated_assessment: [33mAssessment[0m; captured_facts?: [33mC...[0m
+
+
+
+Import trace:
+  Server Component:
+    ./components/InterviewApp.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/InterviewApp.tsx:20:1
+Module not found: Can't resolve './WebsiteFactsReview'
+  [90m18 |[0m [36mimport[0m { mergeCapturedFacts } [36mfrom[0m [32m"@/lib/evidence"[0m;
+  [90m19 |[0m [36mimport[0m { issueCounts } [36mfrom[0m [32m"@/lib/discovery-issues"[0m;
+[31m[1m>[0m [90m20 |[0m [36mimport[0m { [33mWebsiteFactsReview[0m } [36mfrom[0m [32m"./WebsiteFactsReview"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m21 |[0m [36mimport[0m { [33mWorkflowConfirmation[0m } [36mfrom[0m [32m"./WorkflowConfirmation"[0m;
+  [90m22 |[0m
+  [90m23 |[0m [36mtype[0m [33mAIResponse[0m = [33mAIInterviewResult[0m & { updated_assessment: [33mAssessment[0m; captured_facts?: [33mC...[0m
+
+
+
+Import trace:
+  Server Component:
+    ./components/InterviewApp.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/InterviewApp.tsx:20:1
+Module not found: Can't resolve './WebsiteFactsReview'
+  [90m18 |[0m [36mimport[0m { mergeCapturedFacts } [36mfrom[0m [32m"@/lib/evidence"[0m;
+  [90m19 |[0m [36mimport[0m { issueCounts } [36mfrom[0m [32m"@/lib/discovery-issues"[0m;
+[31m[1m>[0m [90m20 |[0m [36mimport[0m { [33mWebsiteFactsReview[0m } [36mfrom[0m [32m"./WebsiteFactsReview"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m21 |[0m [36mimport[0m { [33mWorkflowConfirmation[0m } [36mfrom[0m [32m"./WorkflowConfirmation"[0m;
+  [90m22 |[0m
+  [90m23 |[0m [36mtype[0m [33mAIResponse[0m = [33mAIInterviewResult[0m & { updated_assessment: [33mAssessment[0m; captured_facts?: [33mC...[0m
+
+
+
+Import trace:
+  Server Component:
+    ./components/InterviewApp.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[browser] ./components/InterviewApp.tsx:20:1
+Module not found: Can't resolve './WebsiteFactsReview'
+  18 | import { mergeCapturedFacts } from "@/lib/evidence";
+  19 | import { issueCounts } from "@/lib/discovery-issues";
+> 20 | import { WebsiteFactsReview } from "./WebsiteFactsReview";
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  21 | import { WorkflowConfirmation } from "./WorkflowConfirmation";
+  22 |
+  23 | type AIResponse = AIInterviewResult & { updated_assessment: Assessment; captured_facts?: C...
+
+Import trace:
+  Server Component:
+    ./components/InterviewApp.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found 
+⨯ ./components/InterviewApp.tsx:20:1
+Module not found: Can't resolve './WebsiteFactsReview'
+  [90m18 |[0m [36mimport[0m { mergeCapturedFacts } [36mfrom[0m [32m"@/lib/evidence"[0m;
+  [90m19 |[0m [36mimport[0m { issueCounts } [36mfrom[0m [32m"@/lib/discovery-issues"[0m;
+[31m[1m>[0m [90m20 |[0m [36mimport[0m { [33mWebsiteFactsReview[0m } [36mfrom[0m [32m"./WebsiteFactsReview"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m21 |[0m [36mimport[0m { [33mWorkflowConfirmation[0m } [36mfrom[0m [32m"./WorkflowConfirmation"[0m;
+  [90m22 |[0m
+  [90m23 |[0m [36mtype[0m [33mAIResponse[0m = [33mAIInterviewResult[0m & { updated_assessment: [33mAssessment[0m; captured_facts?: [33mC...[0m
+
+
+
+Import trace:
+  Server Component:
+    ./components/InterviewApp.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/InterviewApp.tsx:20:1
+Module not found: Can't resolve './WebsiteFactsReview'
+  [90m18 |[0m [36mimport[0m { mergeCapturedFacts } [36mfrom[0m [32m"@/lib/evidence"[0m;
+  [90m19 |[0m [36mimport[0m { issueCounts } [36mfrom[0m [32m"@/lib/discovery-issues"[0m;
+[31m[1m>[0m [90m20 |[0m [36mimport[0m { [33mWebsiteFactsReview[0m } [36mfrom[0m [32m"./WebsiteFactsReview"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m21 |[0m [36mimport[0m { [33mWorkflowConfirmation[0m } [36mfrom[0m [32m"./WorkflowConfirmation"[0m;
+  [90m22 |[0m
+  [90m23 |[0m [36mtype[0m [33mAIResponse[0m = [33mAIInterviewResult[0m & { updated_assessment: [33mAssessment[0m; captured_facts?: [33mC...[0m
+
+
+
+Import trace:
+  Server Component:
+    ./components/InterviewApp.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[browser] Uncaught Error: ./components/InterviewApp.tsx:20:1
+Module not found: Can't resolve './WebsiteFactsReview'
+  18 | import { mergeCapturedFacts } from "@/lib/evidence";
+  19 | import { issueCounts } from "@/lib/discovery-issues";
+> 20 | import { WebsiteFactsReview } from "./WebsiteFactsReview";
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  21 | import { WorkflowConfirmation } from "./WorkflowConfirmation";
+  22 |
+  23 | type AIResponse = AIInterviewResult & { updated_assessment: Assessment; captured_facts?: C...
+
+
+
+Import trace:
+  Server Component:
+    ./components/InterviewApp.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+    at <unknown> (Error: ./components/InterviewApp.tsx:20:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+    at <unknown> (Error: (./components/InterviewApp.tsx:20:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+[browser] ./components/InterviewApp.tsx:20:1
+Module not found: Can't resolve './WebsiteFactsReview'
+  18 | import { mergeCapturedFacts } from "@/lib/evidence";
+  19 | import { issueCounts } from "@/lib/discovery-issues";
+> 20 | import { WebsiteFactsReview } from "./WebsiteFactsReview";
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  21 | import { WorkflowConfirmation } from "./WorkflowConfirmation";
+  22 |
+  23 | type AIResponse = AIInterviewResult & { updated_assessment: Assessment; captured_facts?: C...
+
+Import trace:
+  Server Component:
+    ./components/InterviewApp.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found 
+[browser] ./components/InterviewApp.tsx:20:1
+Module not found: Can't resolve './WebsiteFactsReview'
+  18 | import { mergeCapturedFacts } from "@/lib/evidence";
+  19 | import { issueCounts } from "@/lib/discovery-issues";
+> 20 | import { WebsiteFactsReview } from "./WebsiteFactsReview";
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  21 | import { WorkflowConfirmation } from "./WorkflowConfirmation";
+  22 |
+  23 | type AIResponse = AIInterviewResult & { updated_assessment: Assessment; captured_facts?: C...
+
+Import trace:
+  Server Component:
+    ./components/InterviewApp.tsx
+    ./app/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found 
