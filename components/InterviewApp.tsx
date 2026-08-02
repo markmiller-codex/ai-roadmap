@@ -17,6 +17,8 @@ import type { WebsiteAnalysis } from "@/lib/website-analysis";
 import { createBenchmarkFacts, createBenchmarkIssues, findIndustryBenchmark } from "@/lib/industry-benchmarks";
 import { mergeCapturedFacts } from "@/lib/evidence";
 import { issueCounts } from "@/lib/discovery-issues";
+import { WebsiteFactsReview } from "./WebsiteFactsReview";
+import { WorkflowConfirmation } from "./WorkflowConfirmation";
 
 type AIResponse = AIInterviewResult & { updated_assessment: Assessment; captured_facts?: CapturedFact[] };
 const answerFor = (assessment: Assessment, question: AssessmentQuestion | null) => question ? assessment.answers.find((item) => item.question_id === question.id)?.answer ?? "" : "";
@@ -89,6 +91,8 @@ export function InterviewApp() {
   const benchmark=findIndustryBenchmark(assessment.company_profile.industry); const sourceGroups=[["Confirmed facts",assessment.capturedFacts.filter((f)=>f.sourceType==="user_confirmed")],["User estimates",assessment.capturedFacts.filter((f)=>f.sourceType==="user_estimate")],["Website-derived facts",assessment.capturedFacts.filter((f)=>f.sourceType==="website")],["Industry benchmark assumptions",assessment.capturedFacts.filter((f)=>f.sourceType==="industry_benchmark")],["Unknowns needing verification",assessment.capturedFacts.filter((f)=>f.sourceType==="unknown_verifiable"||f.needsClarification||f.needsConfirmation)]] as const;
   const discoveryCounts=issueCounts(assessment); const discoveryGroups=[["Confirmed facts",discoveryCounts.confirmed,assessment.capturedFacts.filter((f)=>f.sourceType==="user_confirmed").map((f)=>f.label)],["User estimates",discoveryCounts.estimates,assessment.discoveryIssues.filter((i)=>i.issueType==="user_estimate").map((i)=>i.label)],["Industry benchmark assumptions",discoveryCounts.benchmarks,assessment.discoveryIssues.filter((i)=>i.issueType==="benchmark_assumption").map((i)=>i.label)],["Missing information",discoveryCounts.missing,assessment.discoveryIssues.filter((i)=>i.issueType==="missing_information"&&i.status==="open").map((i)=>i.label)],["Excluded variables",discoveryCounts.excluded,assessment.discoveryIssues.filter((i)=>i.status==="excluded").map((i)=>i.label)],["Conflicting information",discoveryCounts.conflicts,assessment.discoveryIssues.filter((i)=>i.issueType==="conflicting_information"&&i.status!=="resolved").map((i)=>i.label)],["Items needing verification",discoveryCounts.verification,assessment.discoveryIssues.filter((i)=>["needs_verification","user_estimate","benchmark_assumption"].includes(i.issueType)).map((i)=>i.label)]] as const;
   const applyBenchmark=()=>{ if(!benchmark)return; const facts=createBenchmarkFacts(benchmark,assessment); const next=structuredClone(assessment); next.capturedFacts=mergeCapturedFacts(next.capturedFacts,facts); next.discoveryIssues=[...next.discoveryIssues,...createBenchmarkIssues(facts)]; next.updated_at=new Date().toISOString(); setAssessment(next); setCapturedFactsThisTurn(facts); setSessionStatus(`${facts.length} ${benchmark.label} assumptions added for missing areas. Confirm or replace them during discovery.`); };
+  const websiteReviewPending=assessment.websiteDiscovery.status==="pending_review"; const workflowReviewPending=assessment.websiteDiscovery.status==="confirmed"&&assessment.expectedWorkflowReviews.some((item)=>item.status==="unreviewed"); const reviewGate=websiteReviewPending||workflowReviewPending;
+  const acceptReviewedAssessment=(next:Assessment)=>{setAssessment(next);setSkipped([]);const nextQuestion=selectNext(next,[]);setMessages((current)=>[...current,message("assistant",nextQuestion?.title??"Company and workflow inventory review complete.")]);};
 
   return <main>
     <header className="hero"><div><span className="eyebrow">Adaptive AI assessment engine</span><h1>Build a practical AI roadmap</h1><p>A consultant-style AI interview captures natural-language answers into a guarded business data model, with deterministic questions and scoring always available.</p></div>
@@ -98,7 +102,9 @@ export function InterviewApp() {
     {sessionStatus && <p className="session-status" role="status">{sessionStatus}</p>}
     {websiteStatus && <p className="session-status" role="status">{websiteStatus}</p>}
     <aside className="resume-notice consultant-guidance"><div><strong>Interactive discovery</strong><span>{CONSULTANT_GUIDANCE}</span><small>Your assessment progress is saved in this browser. You can return later to update estimates, replace benchmark assumptions, or add missing information before generating a final roadmap.</small></div></aside>
-    <div className="dashboard">
+    {websiteReviewPending&&<section className="panel review-gate"><WebsiteFactsReview assessment={assessment} onConfirm={acceptReviewedAssessment}/></section>}
+    {assessment.websiteDiscovery.status==="confirmed"&&<section className="panel review-gate"><WorkflowConfirmation assessment={assessment} onChange={setAssessment}/></section>}
+    <div className={reviewGate?"dashboard gated":"dashboard"} aria-hidden={reviewGate}>
       <section className="panel interview">
         <div className="mode-switch" aria-label="Interview mode"><button className={interviewMode === "ai" ? "active" : "secondary"} onClick={() => setInterviewMode("ai")}>AI interview</button><button className={interviewMode === "deterministic" ? "active" : "secondary"} onClick={() => setInterviewMode("deterministic")}>Module flow</button></div>
         {interviewMode === "ai" ? <>

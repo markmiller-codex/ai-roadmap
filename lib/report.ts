@@ -72,6 +72,18 @@ This report is classified as **${reportStatus}**. Confirmed company evidence is 
 - Excluded variables: ${issues.filter((issue)=>issue.status==="excluded").length}
 - Unresolved conflicts: ${issues.filter((issue)=>issue.issueType==="conflicting_information"&&issue.status!=="resolved").length}
 
+## Workflow Discovery Coverage
+
+- Expected workflows reviewed: ${state.expectedWorkflowReviews.filter((item)=>item.status!=="unreviewed").length} of ${state.expectedWorkflowReviews.length}
+- Confirmed or added workflows: ${state.expectedWorkflowReviews.filter((item)=>item.status==="exists"||item.status==="missed_add").length}
+- Outsourced workflows: ${state.expectedWorkflowReviews.filter((item)=>item.status==="outsourced").map((item)=>item.workflowName).join(", ")||"None recorded"}
+- Not material / does not exist: ${state.expectedWorkflowReviews.filter((item)=>item.status==="not_material"||item.status==="does_not_exist").map((item)=>item.workflowName).join(", ")||"None recorded"}
+- Missing or needing discussion: ${state.expectedWorkflowReviews.filter((item)=>item.status==="needs_discussion"||item.status==="unreviewed").map((item)=>item.workflowName).join(", ")||"None"}
+
+| Confirmed workflow | Owner | Volume | Time burden | Exceptions | Systems / data / documents | Materiality | Source / confidence |
+|---|---|---:|---:|---:|---|---|---|
+${state.workflows.map((workflow)=>`| ${workflow.workflow_name} | ${workflow.owner||"Not captured"} | ${workflow.monthly_volume??"?"}/month | ${workflow.weekly_time_cost_hours??"?"} hours/week | ${workflow.exception_rate_percent??"?"}% | ${list([...workflow.systems_used,...(workflow.data_sources??[]),...workflow.documents_used])} | ${list(workflow.materiality_reasons)} | ${workflow.sourceType??"system_inferred"} / ${workflow.confidence??"inferred"} |`).join("\n")||"| No confirmed workflows | â€” | â€” | â€” | â€” | â€” | â€” | â€” |"}
+
 ## 3. Operating snapshot
 
 | Operating metric | Value | Period | Source |

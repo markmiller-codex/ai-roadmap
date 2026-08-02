@@ -1,4 +1,4 @@
-import scoringModel from "@/schemas/scoring_model.json";
+import scoringModel from "../schemas/scoring_model.json" with { type: "json" };
 import type { Assessment, Opportunity, OpportunityClassification, RoadmapPhase, Score, Workflow } from "@/types/assessment";
 
 function classification(o: Opportunity, score: number): OpportunityClassification {
