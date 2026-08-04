@@ -23,7 +23,7 @@ import { WorkflowConfirmation } from "./WorkflowConfirmation";
 type AIResponse = AIInterviewResult & { updated_assessment: Assessment; captured_facts?: CapturedFact[] };
 const answerFor = (assessment: Assessment, question: AssessmentQuestion | null) => question ? assessment.answers.find((item) => item.question_id === question.id)?.answer ?? "" : "";
 const message = (role: InterviewMessage["role"], text: string): InterviewMessage => ({role,text,timestamp:new Date().toISOString()});
-const CONSULTANT_GUIDANCE="This discovery process is interactive. You can answer in plain English, ask clarifying questions, say that a value is unknown, or tell me when you are estimating. If a number is unknown, I can suggest an industry benchmark range, mark it for later verification, or exclude it from the current analysis. You can return across multiple sessions as better information becomes available.";
+const CONSULTANT_GUIDANCE="This process is interactive. I will use your website, industry norms, and your answers to estimate the workflows where AI may create the highest ROI. You do not need to complete consultant-style workflow forms. If you do not know a number, say so. I can suggest a benchmark, mark it for later verification, or exclude it from the current analysis.";
 const openingMessages = (question: AssessmentQuestion | null): InterviewMessage[] => [message("assistant",CONSULTANT_GUIDANCE),message("assistant",question?.title ?? "Your assessment has enough coverage to review the roadmap.")];
 const factValue = (fact: CapturedFact) => typeof fact.value === "object" ? `${fact.value.min}–${fact.value.max}` : String(fact.value);
 
