@@ -74,6 +74,14 @@ This report is classified as **${reportStatus}**. Confirmed company evidence is 
 
 ## Workflow Discovery Coverage
 
+### Business Size & Complexity Calibration
+
+Calibration status: **${state.businessCalibration.status.replaceAll("_"," ")}**. Workflow estimates use these size, service-mix, and volume drivers before industry assumptions.
+
+| Calibration driver | Value | Source / confidence |
+|---|---:|---|
+${Object.values(state.businessCalibration.answers).map((answer)=>`| ${answer.fieldId.replaceAll("_"," ")} | ${typeof answer.value==="object"&&answer.value?`${answer.value.min}-${answer.value.max}`:answer.value??"Not provided"} ${answer.unit} | ${answer.sourceType} / ${answer.confidence} |`).join("\n")||"| Calibration incomplete | — | — |"}
+
 - Expected workflows reviewed: ${state.expectedWorkflowReviews.filter((item)=>item.status!=="unreviewed").length} of ${state.expectedWorkflowReviews.length}
 - Confirmed or added workflows: ${state.expectedWorkflowReviews.filter((item)=>item.status==="exists"||item.status==="missed_add").length}
 - Outsourced workflows: ${state.expectedWorkflowReviews.filter((item)=>item.status==="outsourced").map((item)=>item.workflowName).join(", ")||"None recorded"}

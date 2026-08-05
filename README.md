@@ -35,6 +35,8 @@ npm run build
 
 ## Current app status
 
+Discovery now follows a guarded website-first sequence: website analysis, editable fact review, Business Size & Complexity Calibration, calibrated industry workflow cards, opportunity scoring, and report preview. Calibration uses a compact industry-specific set of exact, estimated, ranged, benchmark, unknown/verifiable, or excluded inputs. Workflow volume, time-per-item, and exception edits immediately recalculate annual effort and downstream opportunity priorities.
+
 The repository is a functional adaptive assessment MVP. It can run an assessment from an empty state or load the complete Iona Hospitality example, select the next question, generate schema-aligned data, calculate weighted report readiness, score opportunities, and render a Markdown roadmap report. Assessment state is stored in browser `localStorage`; AI interview turns use a server-only API route.
 
 ## AI interview layer
