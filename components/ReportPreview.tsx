@@ -6,6 +6,7 @@ import { initialAssessment } from "@/lib/initial-state";
 import { generateReport } from "@/lib/report";
 import { loadAssessment } from "@/lib/storage";
 import type { Assessment } from "@/types/assessment";
+import { appendStoredTrace } from "@/lib/trace";
 
 const cells = (line: string) => line.split("|").slice(1, -1).map((cell) => cell.trim());
 const isDivider = (line: string) => /^\|[\s:|-]+\|$/.test(line);
@@ -54,12 +55,12 @@ export function ReportPreview() {
   const [copied, setCopied] = useState(false);
   const [printAttempted, setPrintAttempted] = useState(false);
   useEffect(() => {
-    const timer = window.setTimeout(() => setAssessment(loadAssessment() ?? structuredClone(initialAssessment)), 0);
+    const timer = window.setTimeout(() => {setAssessment(loadAssessment() ?? structuredClone(initialAssessment));appendStoredTrace({eventType:"report_generated",message:"Roadmap report preview generated.",affectedId:"roadmap_report",source:"system"});}, 0);
     return () => window.clearTimeout(timer);
   }, []);
   const report = generateReport(assessment);
   const copy = async () => { await navigator.clipboard.writeText(report); setCopied(true); };
-  const print = () => { setPrintAttempted(true); window.print(); };
+  const print = () => { appendStoredTrace({eventType:"print_triggered",message:"Roadmap report print requested.",affectedId:"roadmap_report",source:"user"});setPrintAttempted(true); window.print(); };
   return <main className="report-shell"><header className="hero compact no-print"><div><span className="eyebrow">Generated deliverable</span><h1>Roadmap report preview</h1><p>Review the generated roadmap, then print it or save it as a PDF.</p></div><div className="header-actions"><Link className="secondary link-control" href="/">Back to interview</Link><button onClick={copy}>{copied ? "Copied" : "Copy Markdown"}</button><button className="print-button" onClick={print}>Print Report</button></div></header>
     <article className="report-preview" aria-label="AI Opportunity Roadmap Report">{printAttempted && <p className="print-fallback no-print" role="status">No print dialog? The embedded Codex browser does not support system print dialogs. Open this same URL in Chrome, Edge, Firefox, or Safari and click <strong>Print Report</strong>, or press <strong>Ctrl+P</strong>.</p>}<ReportDocument report={report} /></article></main>;
 }

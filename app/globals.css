@@ -39,6 +39,10 @@ pre { white-space:pre-wrap; word-break:break-word; background:#111d2e; color:#d9
 .calibration-field input,.calibration-actions select { width:100%; padding:9px; border:1px solid #bbc6d3; border-radius:8px; font:inherit; }
 .calibration-field small { color:var(--muted); }.calibration-actions { display:flex; align-items:center; gap:8px; }
 .calculation-basis { padding:12px 14px; border-left:3px solid var(--brand2); background:#f6fafb; font-size:.85rem; }.calculation-basis ul { margin:6px 0 0; padding-left:19px; }
+.discovery-navigation { max-width:1180px; margin:14px auto 0; padding:0 24px; display:flex; align-items:center; gap:12px; color:var(--muted); font-size:.86rem; }
+.inline-validation { padding:10px 12px; border-radius:8px; background:#fff8e8; color:var(--warn); }
+.trace-panel { max-width:1180px; margin:0 auto 40px; padding:16px 20px; border:1px solid var(--line); border-radius:12px; background:#111d2e; color:#d9e7f4; }
+.trace-panel > summary { display:flex; justify-content:space-between; cursor:pointer; font-weight:700; }.trace-panel .actions { margin:14px 0; }.trace-list { display:grid; gap:8px; max-height:420px; overflow:auto; }.trace-list article { padding:10px; border:1px solid #ffffff22; border-radius:8px; }.trace-list article > div { display:flex; justify-content:space-between; gap:12px; }.trace-list p { margin:5px 0; }.trace-list small { color:#a9bed2; }.trace-list code { display:block; margin-top:6px; color:#b9e4d8; white-space:pre-wrap; word-break:break-word; }
 @media print {
   body { background:white; color:#111; font-family:Georgia,"Times New Roman",serif; font-size:10.5pt; }
   .no-print,nav,button,input,textarea,.mode-switch,.chat-log { display:none !important; }
